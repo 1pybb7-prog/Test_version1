@@ -27,13 +27,9 @@ interface TourCardProps {
   className?: string;
 }
 
-/**
- * 기본 이미지 URL (이미지가 없을 때 사용)
- */
-const DEFAULT_IMAGE_URL = "https://via.placeholder.com/400x300?text=No+Image";
-
 export default function TourCard({ tour, className }: TourCardProps) {
-  const imageUrl = tour.firstimage || tour.firstimage2 || DEFAULT_IMAGE_URL;
+  const imageUrl = tour.firstimage || tour.firstimage2;
+  const hasImage = Boolean(imageUrl);
   const tourTypeName = getTourTypeName(tour.contenttypeid);
   const detailUrl = `/places/${tour.contentid}`;
 
@@ -47,14 +43,20 @@ export default function TourCard({ tour, className }: TourCardProps) {
     >
       {/* 이미지 영역 */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
-        <Image
-          src={imageUrl}
-          alt={tour.title}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          loading="lazy"
-        />
+        {hasImage ? (
+          <Image
+            src={imageUrl}
+            alt={tour.title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
+            <span className="text-sm">이미지 없음</span>
+          </div>
+        )}
         {/* 타입 뱃지 */}
         <div className="absolute right-2 top-2">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary/90 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur-sm">

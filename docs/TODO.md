@@ -113,19 +113,21 @@
 
 ### 필터 기능
 
-- [ ] `components/TourFilter.tsx`
-  - Guideline 준수: 불필요한 추상화 금지
-  - shadcn/ui Select/Radio 컴포넌트 활용
-  - 지역 필터 (시/도)
-  - 관광 타입 필터
-  - Spacing-First 정책 준수
-- [ ] `hooks/useTourFilter.ts`
-  - 필터 상태 관리
-  - 필터링 로직 분리
-  - React Query와 연동
-- [ ] 필터 동작 연결
-- [ ] 필터링된 결과 표시
-- [ ] 페이지 확인 및 UX 개선
+- [x] `components/TourFilter.tsx` ✅
+  - Guideline 준수: 불필요한 추상화 금지 ✅
+  - shadcn/ui Select 컴포넌트 활용 ✅
+  - 지역 필터 (시/도) ✅
+  - 관광 타입 필터 ✅
+  - Spacing-First 정책 준수 ✅
+  - 필터 초기화 버튼 ✅
+- [x] `hooks/useTourFilter.ts` ✅
+  - 필터 상태 관리 ✅
+  - 필터링 로직 분리 ✅
+  - React Query와 연동 ✅
+- [x] `lib/utils/area-code-converter.ts` - 지역코드 변환 유틸리티 ✅
+- [x] 필터 동작 연결 ✅
+- [x] 필터링된 결과 표시 ✅
+- [ ] 페이지 확인 및 UX 개선 (다음 단계)
 
 ### 검색 기능 (MVP 2.3)
 
@@ -322,8 +324,8 @@
 
 - [x] `next.config.ts` 외부 도메인 설정 ✅
   - [x] 기본 images 설정 확인 ✅
-  - [ ] 한국관광공사 이미지 도메인 허용 필요
-  - [ ] Google Maps 이미지 도메인 허용 필요
+  - [x] 한국관광공사 이미지 도메인 허용 (`cdn.visitkorea.or.kr`) ✅
+  - [ ] Google Maps 이미지 도메인 허용 필요 (향후 지도 기능 추가 시)
 - [ ] `next/image` 사용 확인
   - 모든 이미지에 `Image` 컴포넌트 사용
   - `loading="lazy"` 설정
