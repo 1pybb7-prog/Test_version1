@@ -126,15 +126,7 @@ export default function GoogleMap({
   className,
   mapId = "google-map",
 }: GoogleMapProps) {
-  const {
-    map,
-    isLoading,
-    error,
-    panToMarker,
-    highlightMarker,
-    openInfoWindow,
-    closeInfoWindow,
-  } = useGoogleMap({
+  const { map, isLoading, error, panToMarker } = useGoogleMap({
     mapId,
     initialCenter,
     initialZoom,

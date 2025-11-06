@@ -61,7 +61,7 @@ function getVisiblePages(currentPage: number, totalPages: number): number[] {
   } else {
     // 현재 페이지를 중심으로 표시
     let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
+    const end = Math.min(totalPages, start + maxVisible - 1);
 
     // 끝에 도달했을 때 조정
     if (end - start < maxVisible - 1) {

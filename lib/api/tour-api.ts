@@ -85,7 +85,7 @@ async function fetchApi<T>(
     serviceKey,
     ...COMMON_PARAMS,
     ...Object.fromEntries(
-      Object.entries(params).filter(([_, value]) => value !== undefined),
+      Object.entries(params).filter(([, value]) => value !== undefined),
     ),
   });
 

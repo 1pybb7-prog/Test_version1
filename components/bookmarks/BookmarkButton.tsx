@@ -2,7 +2,7 @@
 
 import { Star } from "lucide-react";
 import { toast } from "sonner";
-import { SignInButton, SignedOut } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useBookmark } from "@/hooks/useBookmark";
 import { cn } from "@/lib/utils";
