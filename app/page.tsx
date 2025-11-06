@@ -124,7 +124,7 @@ export default function Home() {
       </section>
 
       {/* 검색 섹션 */}
-      <section className="sticky top-[80px] z-10 border-b bg-background">
+      <section className="border-b bg-background">
         <TourSearch
           keyword={searchKeyword}
           onKeywordChange={setSearchKeyword}
@@ -134,7 +134,7 @@ export default function Home() {
       </section>
 
       {/* 필터 섹션 */}
-      <section className="sticky top-[140px] z-10 border-b bg-background">
+      <section className="border-b bg-background">
         <TourFilter
           areaCode={filters.areaCode}
           contentTypeId={filters.contentTypeId}
@@ -145,7 +145,7 @@ export default function Home() {
       </section>
 
       {/* 정렬 섹션 */}
-      <section className="sticky top-[200px] z-10 border-b bg-background">
+      <section className="border-b bg-background">
         <TourSort sortOption={sortOption} onSortChange={setSortOption} />
       </section>
 
