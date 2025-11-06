@@ -108,8 +108,11 @@
   - 페이지네이션 처리 준비 ✅
 - [x] `lib/utils/tour-type-converter.ts` - 관광 타입 변환 유틸리티 ✅
 - [x] `app/page.tsx` 홈페이지 레이아웃으로 업데이트 ✅
-- [ ] API 연동하여 실제 데이터 표시 (다음 단계)
-- [ ] 페이지 확인 및 스타일링 조정 (반응형 검증)
+- [x] API 연동하여 실제 데이터 표시 ✅
+  - `useTourList` 훅에서 실제 API 호출 (`getAreaBasedList`) ✅
+  - 샘플 데이터 필터링 로직 제거 (API에서 처리) ✅
+  - 에러 처리 개선 (API 키 미설정, 네트워크 에러 등) ✅
+- [x] 페이지 확인 및 스타일링 조정 (반응형 검증) ✅
 
 ### 필터 기능
 
@@ -127,47 +130,47 @@
 - [x] `lib/utils/area-code-converter.ts` - 지역코드 변환 유틸리티 ✅
 - [x] 필터 동작 연결 ✅
 - [x] 필터링된 결과 표시 ✅
-- [ ] 페이지 확인 및 UX 개선 (다음 단계)
+- [x] 페이지 확인 및 UX 개선 ✅
 
 ### 검색 기능 (MVP 2.3)
 
-- [ ] `components/TourSearch.tsx`
+- [x] `components/TourSearch.tsx` ✅
   - shadcn/ui Input 컴포넌트 활용
   - 검색 아이콘 (lucide-react)
   - Spacing-First 정책 준수
-- [ ] `hooks/useTourSearch.ts`
+- [x] `hooks/useTourSearch.ts` ✅
   - 검색 로직 훅
   - React Query 활용
-- [ ] 검색 API 연동 (`searchKeyword2`)
-- [ ] 검색 결과 표시
-- [ ] 검색 + 필터 조합 동작
-- [ ] 페이지 확인 및 UX 개선
+- [x] 검색 API 연동 (`searchKeyword2`) ✅
+- [x] 검색 결과 표시 ✅
+- [x] 검색 + 필터 조합 동작 ✅
+- [x] 페이지 확인 및 UX 개선 ✅
 
 ### 지도 연동 (MVP 2.2)
 
-- [ ] `components/GoogleMap.tsx`
+- [x] `components/GoogleMap.tsx` ✅
   - Guideline 준수: PascalCase 네이밍
   - 동적 로딩: `next/dynamic` 활용 (필요할 때만 로드)
   - Google Maps JavaScript API 로드
   - 기본 지도 표시
   - Spacing-First 정책 준수
-- [ ] `hooks/useGoogleMap.ts`
+- [x] `hooks/useGoogleMap.ts` ✅
   - 지도 초기화 및 상태 관리 훅
   - 마커 관리 로직
-- [ ] 좌표 변환 유틸리티 활용 (`lib/utils/coordinate-converter.ts`)
-- [ ] 관광지 마커 표시
-- [ ] 마커 클릭 시 정보창(InfoWindow)
+- [x] 좌표 변환 유틸리티 활용 (`lib/utils/coordinate-converter.ts`) ✅
+- [x] 관광지 마커 표시 ✅
+- [x] 마커 클릭 시 정보창(InfoWindow) ✅
   - 관광지명, 간단한 설명, "상세보기" 버튼
-- [ ] 리스트-지도 연동
+- [x] 리스트-지도 연동 ✅
   - 리스트 항목 클릭 시 해당 마커로 지도 이동
   - 리스트 항목 호버 시 해당 마커 강조 (선택 사항)
-- [ ] 마커 클러스터링
+- [x] 마커 클러스터링 ✅
   - `@googlemaps/markerclusterer` 라이브러리 설치 및 활용
-- [ ] 반응형 레이아웃
+- [x] 반응형 레이아웃 ✅
   - 데스크톱: 리스트(좌측) + 지도(우측) 분할 레이아웃
   - 모바일: 탭 형태로 리스트/지도 전환
   - Spacing-First 정책: `gap` 사용
-- [ ] 페이지 확인 및 인터랙션 테스트
+- [x] 페이지 확인 및 인터랙션 테스트 ✅
 
 ### 정렬 & 페이지네이션
 
@@ -324,7 +327,9 @@
 
 - [x] `next.config.ts` 외부 도메인 설정 ✅
   - [x] 기본 images 설정 확인 ✅
-  - [x] 한국관광공사 이미지 도메인 허용 (`cdn.visitkorea.or.kr`) ✅
+  - [x] 한국관광공사 이미지 도메인 허용 ✅
+    - [x] `cdn.visitkorea.or.kr` ✅
+    - [x] `tong.visitkorea.or.kr` ✅
   - [ ] Google Maps 이미지 도메인 허용 필요 (향후 지도 기능 추가 시)
 - [ ] `next/image` 사용 확인
   - 모든 이미지에 `Image` 컴포넌트 사용

@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: "img.clerk.com" },
       { hostname: "cdn.visitkorea.or.kr" },
+      { hostname: "tong.visitkorea.or.kr" },
       { hostname: "via.placeholder.com" },
     ],
   },

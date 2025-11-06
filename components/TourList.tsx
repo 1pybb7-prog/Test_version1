@@ -1,6 +1,7 @@
 "use client";
 
 import { useTourList } from "@/hooks/useTourList";
+import { useTourSearch } from "@/hooks/useTourSearch";
 import TourCard from "@/components/TourCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
@@ -13,20 +14,27 @@ import { cn } from "@/lib/utils";
  * 관광지 목록을 그리드 레이아웃으로 표시하는 컴포넌트입니다.
  *
  * 주요 기능:
- * 1. React Query를 통한 관광지 목록 조회
- * 2. 반응형 그리드 레이아웃 (모바일: 1열, 태블릿: 2열, 데스크톱: 3-4열)
- * 3. 로딩/에러/빈 상태 처리
+ * 1. React Query를 통한 관광지 목록 조회 (일반 모드)
+ * 2. React Query를 통한 관광지 검색 (검색 모드)
+ * 3. 반응형 그리드 레이아웃 (모바일: 1열, 태블릿: 2열, 데스크톱: 3-4열)
+ * 4. 로딩/에러/빈 상태 처리
  *
  * @see {@link /docs/prd.md#21-관광지-목록--지역타입-필터} - PRD 문서의 관광지 목록 섹션
+ * @see {@link /docs/prd.md#23-키워드-검색} - PRD 문서의 키워드 검색 섹션
  * @see {@link /docs/reference/design/Design.md#1-홈페이지} - 디자인 문서의 리스트 레이아웃
  */
 
 interface TourListProps {
+  keyword?: string; // 검색 키워드 (있으면 검색 모드, 없으면 일반 모드)
   areaCode?: string;
   contentTypeId?: string;
   numOfRows?: number;
   pageNo?: number;
   className?: string;
+  /** 관광지 선택 핸들러 (지도 연동용) */
+  onTourSelect?: (tourId: string) => void;
+  /** 호버 시 마커 강조 핸들러 (지도 연동용) */
+  onTourHover?: (tourId: string) => void;
 }
 
 /**
@@ -48,14 +56,18 @@ function TourCardSkeleton() {
 /**
  * 빈 상태 컴포넌트
  */
-function EmptyState() {
+function EmptyState({ isSearchMode }: { isSearchMode?: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
       <AlertCircle className="size-12 text-muted-foreground" />
       <div className="flex flex-col gap-2">
-        <h3 className="text-lg font-semibold">관광지를 찾을 수 없습니다</h3>
+        <h3 className="text-lg font-semibold">
+          {isSearchMode ? "검색 결과가 없습니다" : "관광지를 찾을 수 없습니다"}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          다른 조건으로 검색해보세요.
+          {isSearchMode
+            ? "다른 키워드로 검색해보세요."
+            : "다른 조건으로 검색해보세요."}
         </p>
       </div>
     </div>
@@ -80,18 +92,38 @@ function ErrorState({ error }: { error: Error }) {
 }
 
 export default function TourList({
+  keyword,
   areaCode,
   contentTypeId,
   numOfRows = 10,
   pageNo = 1,
   className,
+  onTourSelect,
+  onTourHover,
 }: TourListProps) {
-  const { data, isLoading, isError, error } = useTourList({
+  // 검색 모드: keyword가 있으면 useTourSearch 사용
+  const searchQuery = useTourSearch({
+    keyword: keyword ?? "",
+    areaCode,
+    contentTypeId,
+    numOfRows,
+    pageNo,
+    enabled: Boolean(keyword && keyword.trim() !== ""),
+  });
+
+  // 일반 모드: keyword가 없으면 useTourList 사용
+  const listQuery = useTourList({
     areaCode,
     contentTypeId,
     numOfRows,
     pageNo,
   });
+
+  // 검색 모드인지 일반 모드인지 확인
+  const isSearchMode = Boolean(keyword && keyword.trim() !== "");
+  const { data, isLoading, isError, error } = isSearchMode
+    ? searchQuery
+    : listQuery;
 
   // 로딩 상태
   if (isLoading) {
@@ -122,7 +154,7 @@ export default function TourList({
   if (!data || data.length === 0) {
     return (
       <div className={cn(className)}>
-        <EmptyState />
+        <EmptyState isSearchMode={isSearchMode} />
       </div>
     );
   }
@@ -136,7 +168,12 @@ export default function TourList({
       )}
     >
       {data.map((tour) => (
-        <TourCard key={tour.contentid} tour={tour} />
+        <TourCard
+          key={tour.contentid}
+          tour={tour}
+          onTourSelect={onTourSelect}
+          onTourHover={onTourHover}
+        />
       ))}
     </div>
   );

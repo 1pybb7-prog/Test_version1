@@ -25,17 +25,48 @@ import { cn } from "@/lib/utils";
 interface TourCardProps {
   tour: TourItem;
   className?: string;
+  /** 관광지 선택 핸들러 (지도 연동용) */
+  onTourSelect?: (tourId: string) => void;
+  /** 호버 시 마커 강조 핸들러 (지도 연동용) */
+  onTourHover?: (tourId: string) => void;
 }
 
-export default function TourCard({ tour, className }: TourCardProps) {
+export default function TourCard({
+  tour,
+  className,
+  onTourSelect,
+  onTourHover,
+}: TourCardProps) {
   const imageUrl = tour.firstimage || tour.firstimage2;
   const hasImage = Boolean(imageUrl);
   const tourTypeName = getTourTypeName(tour.contenttypeid);
   const detailUrl = `/places/${tour.contentid}`;
 
+  /**
+   * 클릭 핸들러 (지도 연동)
+   */
+  const handleClick = () => {
+    if (onTourSelect) {
+      onTourSelect(tour.contentid);
+      console.log("[TourCard] 관광지 선택:", tour.contentid);
+    }
+  };
+
+  /**
+   * 호버 핸들러 (마커 강조)
+   */
+  const handleMouseEnter = () => {
+    if (onTourHover) {
+      onTourHover(tour.contentid);
+      console.log("[TourCard] 관광지 호버:", tour.contentid);
+    }
+  };
+
   return (
     <Link
       href={detailUrl}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
       className={cn(
         "group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl",
         className,
