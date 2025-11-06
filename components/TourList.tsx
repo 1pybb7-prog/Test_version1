@@ -1,11 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTourList } from "@/hooks/useTourList";
 import { useTourSearch } from "@/hooks/useTourSearch";
 import TourCard from "@/components/TourCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sortTours, type SortOption } from "@/lib/utils/tour-sorter";
 
 /**
  * @file TourList.tsx
@@ -30,6 +32,7 @@ interface TourListProps {
   contentTypeId?: string;
   numOfRows?: number;
   pageNo?: number;
+  sortOption?: SortOption; // 정렬 옵션
   className?: string;
   /** 관광지 선택 핸들러 (지도 연동용) */
   onTourSelect?: (tourId: string) => void;
@@ -97,6 +100,7 @@ export default function TourList({
   contentTypeId,
   numOfRows = 10,
   pageNo = 1,
+  sortOption = "latest",
   className,
   onTourSelect,
   onTourHover,
@@ -125,6 +129,14 @@ export default function TourList({
     ? searchQuery
     : listQuery;
 
+  // 정렬된 데이터 계산 (메모이제이션)
+  const sortedData = useMemo(() => {
+    if (!data || data.length === 0) {
+      return [];
+    }
+    return sortTours(data, sortOption);
+  }, [data, sortOption]);
+
   // 로딩 상태
   if (isLoading) {
     return (
@@ -134,7 +146,7 @@ export default function TourList({
           className,
         )}
       >
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: numOfRows }).map((_, index) => (
           <TourCardSkeleton key={index} />
         ))}
       </div>
@@ -151,7 +163,7 @@ export default function TourList({
   }
 
   // 빈 상태
-  if (!data || data.length === 0) {
+  if (!sortedData || sortedData.length === 0) {
     return (
       <div className={cn(className)}>
         <EmptyState isSearchMode={isSearchMode} />
@@ -167,7 +179,7 @@ export default function TourList({
         className,
       )}
     >
-      {data.map((tour) => (
+      {sortedData.map((tour) => (
         <TourCard
           key={tour.contentid}
           tour={tour}

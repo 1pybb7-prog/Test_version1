@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import TourList from "@/components/TourList";
 import TourFilter from "@/components/TourFilter";
 import TourSearch from "@/components/TourSearch";
+import TourSort from "@/components/TourSort";
+import TourPagination from "@/components/TourPagination";
 import { useTourFilter } from "@/hooks/useTourFilter";
+import { useTourSort } from "@/hooks/useTourSort";
 import { useTourList } from "@/hooks/useTourList";
 import { useTourSearch } from "@/hooks/useTourSearch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,17 +54,27 @@ const GoogleMap = dynamic(() => import("@/components/GoogleMap"), {
 export default function Home() {
   const { filters, setAreaCode, setContentTypeId, resetFilters } =
     useTourFilter();
+  const { sortOption, setSortOption } = useTourSort();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
+  const [pageNo, setPageNo] = useState(1);
+  const numOfRows = 12; // 페이지당 항목 수
 
   // 검색 모드 여부 확인
   const isSearchMode = Boolean(searchKeyword && searchKeyword.trim() !== "");
+
+  // 필터/검색 변경 시 페이지 리셋
+  useEffect(() => {
+    setPageNo(1);
+    console.log("[Home] 필터/검색 변경으로 페이지 1로 리셋");
+  }, [filters.areaCode, filters.contentTypeId, searchKeyword]);
 
   // 일반 모드: useTourList 사용
   const listQuery = useTourList({
     areaCode: filters.areaCode,
     contentTypeId: filters.contentTypeId,
     numOfRows: 50, // 지도에 표시할 마커 수 증가
+    pageNo,
   });
 
   // 검색 모드: useTourSearch 사용
@@ -69,7 +82,8 @@ export default function Home() {
     keyword: searchKeyword,
     areaCode: filters.areaCode,
     contentTypeId: filters.contentTypeId,
-    numOfRows: 50,
+    numOfRows,
+    pageNo,
     enabled: isSearchMode,
   });
 
@@ -84,6 +98,7 @@ export default function Home() {
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
     setSelectedTourId(undefined); // 검색 시 선택 초기화
+    setPageNo(1); // 검색 시 페이지 1로 리셋
     console.log("[Home] 검색 실행:", keyword);
   };
 
@@ -93,7 +108,23 @@ export default function Home() {
   const handleSearchClear = () => {
     setSearchKeyword("");
     setSelectedTourId(undefined);
+    setPageNo(1); // 검색 초기화 시 페이지 1로 리셋
     console.log("[Home] 검색 초기화");
+  };
+
+  /**
+   * 필터 변경 핸들러 (페이지 리셋 포함)
+   */
+  const handleAreaCodeChange = (areaCode: string | undefined) => {
+    setAreaCode(areaCode);
+    setPageNo(1);
+    console.log("[Home] 지역 필터 변경:", areaCode);
+  };
+
+  const handleContentTypeIdChange = (contentTypeId: string | undefined) => {
+    setContentTypeId(contentTypeId);
+    setPageNo(1);
+    console.log("[Home] 관광 타입 필터 변경:", contentTypeId);
   };
 
   /**
@@ -112,6 +143,16 @@ export default function Home() {
     // useGoogleMap의 highlightMarker를 사용하려면 ref가 필요하므로,
     // 현재는 간단하게 로그만 출력
     console.log("[Home] 관광지 호버:", tourId);
+  };
+
+  /**
+   * 페이지 변경 핸들러
+   */
+  const handlePageChange = (page: number) => {
+    setPageNo(page);
+    // 페이지 변경 시 스크롤을 상단으로 이동
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    console.log("[Home] 페이지 변경:", page);
   };
 
   return (
@@ -145,10 +186,15 @@ export default function Home() {
         <TourFilter
           areaCode={filters.areaCode}
           contentTypeId={filters.contentTypeId}
-          onAreaCodeChange={setAreaCode}
-          onContentTypeIdChange={setContentTypeId}
+          onAreaCodeChange={handleAreaCodeChange}
+          onContentTypeIdChange={handleContentTypeIdChange}
           onReset={resetFilters}
         />
+      </section>
+
+      {/* 정렬 섹션 */}
+      <section className="sticky top-[200px] z-10 border-b bg-background">
+        <TourSort sortOption={sortOption} onSortChange={setSortOption} />
       </section>
 
       {/* 관광지 목록 + 지도 섹션 */}
@@ -156,19 +202,30 @@ export default function Home() {
         {/* 데스크톱: 분할 레이아웃 */}
         <div className="hidden gap-6 lg:grid lg:grid-cols-2">
           {/* 좌측: 리스트 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-6">
             <TourList
               keyword={searchKeyword}
               areaCode={filters.areaCode}
               contentTypeId={filters.contentTypeId}
-              numOfRows={12}
+              numOfRows={numOfRows}
+              pageNo={pageNo}
+              sortOption={sortOption}
               onTourSelect={handleTourSelect}
               onTourHover={handleTourHover}
             />
+            {/* 페이지네이션 */}
+            {!isLoading && tours.length > 0 && (
+              <TourPagination
+                currentPage={pageNo}
+                itemsPerPage={numOfRows}
+                currentItemsCount={tours.length}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
 
           {/* 우측: 지도 */}
-          <div className="sticky top-[200px] h-[calc(100vh-200px)]">
+          <div className="sticky top-[260px] h-[calc(100vh-260px)]">
             <GoogleMap
               tours={tours}
               selectedTourId={selectedTourId}
@@ -186,14 +243,27 @@ export default function Home() {
               <TabsTrigger value="map">지도</TabsTrigger>
             </TabsList>
             <TabsContent value="list" className="mt-6">
-              <TourList
-                keyword={searchKeyword}
-                areaCode={filters.areaCode}
-                contentTypeId={filters.contentTypeId}
-                numOfRows={12}
-                onTourSelect={handleTourSelect}
-                onTourHover={handleTourHover}
-              />
+              <div className="flex flex-col gap-6">
+                <TourList
+                  keyword={searchKeyword}
+                  areaCode={filters.areaCode}
+                  contentTypeId={filters.contentTypeId}
+                  numOfRows={numOfRows}
+                  pageNo={pageNo}
+                  sortOption={sortOption}
+                  onTourSelect={handleTourSelect}
+                  onTourHover={handleTourHover}
+                />
+                {/* 페이지네이션 */}
+                {!isLoading && tours.length > 0 && (
+                  <TourPagination
+                    currentPage={pageNo}
+                    itemsPerPage={numOfRows}
+                    currentItemsCount={tours.length}
+                    onPageChange={handlePageChange}
+                  />
+                )}
+              </div>
             </TabsContent>
             <TabsContent value="map" className="mt-6">
               <div className="h-[600px]">
