@@ -1,0 +1,15 @@
+"use client";
+
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import type { ThemeProviderProps } from "next-themes/dist/types";
+
+/**
+ * Theme Provider 컴포넌트
+ *
+ * 다크모드 지원을 위한 next-themes Provider입니다.
+ *
+ * @see {@link /docs/prd.md#31-frontend} - PRD 문서의 기술 스택 섹션
+ */
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}

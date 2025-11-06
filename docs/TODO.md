@@ -1,25 +1,469 @@
-- [ ] `.cursor/` 디렉토리
-  - [ ] `rules/` 커서룰
-  - [ ] `mcp.json` MCP 서버 설정
-  - [ ] `dir.md` 프로젝트 디렉토리 구조
-- [ ] `.github/` 디렉토리
-- [ ] `.husky/` 디렉토리
-- [ ] `app/` 디렉토리
-  - [ ] `favicon.ico` 파일
-  - [ ] `not-found.tsx` 파일
-  - [ ] `robots.ts` 파일
-  - [ ] `sitemap.ts` 파일
-  - [ ] `manifest.ts` 파일
-- [ ] `supabase/` 디렉토리
-- [ ] `public/` 디렉토리
-  - [ ] `icons/` 디렉토리
-  - [ ] `logo.png` 파일
-  - [ ] `og-image.png` 파일
-- [ ] `tsconfig.json` 파일
-- [ ] `.cursorignore` 파일
-- [ ] `.gitignore` 파일
-- [ ] `.prettierignore` 파일
-- [ ] `.prettierrc` 파일
-- [ ] `tsconfig.json` 파일
-- [ ] `eslint.config.mjs` 파일
-- [ ] `AGENTS.md` 파일
+# 개발 TODO 리스트
+
+> PRD 문서와 Development Guideline을 기반으로 한 개발 작업 체크리스트
+
+---
+
+## Phase 1: 기본 구조 & 공통 설정
+
+### 📊 진행 상황: 20% 완료
+
+### 프로젝트 셋업
+
+- [x] Development Guidelines 숙지 및 검토 ✅
+- [x] 환경변수 설정 (`.env.local` 파일) ✅
+  - [x] `NEXT_PUBLIC_TOUR_API_KEY` (한국관광공사 API) ✅
+  - [x] `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (Google Maps API) ✅
+  - [x] Clerk 인증 키 (기존 설정 확인) ✅
+  - [x] Supabase 키 (기존 설정 확인) ✅
+
+### 기본 구조 및 타입 정의
+
+- [x] `lib/utils.ts` - `cn` 유틸리티 함수 설정 ✅
+- [x] `lib/types/tour.ts` - 관광지 타입 정의 ✅
+  - [x] `TourItem` 인터페이스 ✅
+  - [x] `TourDetail` 인터페이스 ✅
+  - [x] `TourIntro` 인터페이스 ✅
+- [x] `lib/types/bookmark.ts` - 북마크 타입 정의 ✅
+- [x] `lib/utils/coordinate-converter.ts` - 좌표 변환 유틸리티 (KATEC → WGS84) ✅
+  - [x] `proj4` 라이브러리 설치 ✅ (katec-to-wgs84 대신 proj4 사용)
+  - [x] 좌표 변환 함수 구현 ✅
+
+### API 클라이언트
+
+- [x] `lib/api/tour-api.ts` - 한국관광공사 API 호출 함수들 ✅
+  - [x] `getAreaCode` - 지역코드 조회 ✅
+  - [x] `getAreaBasedList` - 지역 기반 관광정보 조회 ✅
+  - [x] `searchKeyword` - 키워드 검색 ✅
+  - [x] `getDetailCommon` - 공통 정보 조회 ✅
+  - [x] `getDetailIntro` - 소개 정보 조회 ✅
+  - [x] `getDetailImage` - 이미지 조회 ✅
+- [x] `lib/api/supabase-api.ts` - Supabase 쿼리 함수들 (북마크) ✅
+  - [x] 북마크 추가/삭제 함수 ✅
+  - [x] 북마크 목록 조회 함수 ✅
+
+### 레이아웃 및 Provider 설정
+
+- [x] `app/layout.tsx` 업데이트 ✅
+  - [x] React Query Provider 설정 (`@tanstack/react-query`) ✅
+  - [x] Theme Provider 설정 (`next-themes`) ✅
+  - [x] ClerkProvider 확인 (기존 설정) ✅
+  - [x] SyncUserProvider 확인 (기존 설정) ✅
+
+### 공통 컴포넌트
+
+- [x] `components/ui/Skeleton.tsx` - 로딩 스켈레톤 UI (shadcn/ui) ✅
+- [x] `components/ui/sonner.tsx` - 토스트 메시지 (shadcn/ui sonner) ✅
+- [x] `components/ui/Button.tsx` - 버튼 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Input.tsx` - 입력 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Form.tsx` - 폼 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Dialog.tsx` - 다이얼로그 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Accordion.tsx` - 아코디언 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Label.tsx` - 라벨 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ui/Textarea.tsx` - 텍스트영역 컴포넌트 (shadcn/ui) ✅
+- [x] `components/ErrorBoundary.tsx` - 에러 바운더리 ✅
+- [x] `components/LoadingSpinner.tsx` - 로딩 스피너 ✅
+
+### 공통 페이지
+
+- [x] `app/not-found.tsx` - 404 페이지 ✅
+  - [x] Guideline 준수: Tailwind CSS 스타일링, Spacing-First 정책 ✅
+- [x] `app/robots.ts` - robots.txt 생성 ✅
+- [x] `app/sitemap.ts` - sitemap.xml 생성 ✅
+- [x] `app/manifest.ts` - PWA 매니페스트 ✅
+- [ ] 추가 작업: `NEXT_PUBLIC_SITE_URL` 환경변수 설정 (선택 사항, 기본값으로 작동 가능)
+- [ ] 향후 작업: 동적 페이지(/places/[contentId]) 추가 시 sitemap.ts 업데이트 필요
+
+---
+
+## Phase 2: 홈페이지 (`/`) - 관광지 목록
+
+### 📊 진행 상황: 5% 완료
+
+### 페이지 기본 구조
+
+- [x] `app/page.tsx` 생성 ✅
+  - Guideline 준수: Next.js 15 App Router 구조 ✅
+  - Spacing-First 정책: `padding` + `gap` 사용 ✅
+- [x] 기본 UI 구조 확인 (헤더, 메인 영역, 푸터) ✅
+  - [x] Navbar 컴포넌트 확인 ✅
+  - [ ] 관광지 목록 기능 구현 필요
+
+### 관광지 목록 기능 (MVP 2.1)
+
+- [ ] `components/TourCard.tsx`
+  - Guideline 준수: PascalCase 네이밍, `export default`
+  - Spacing-First 정책: `padding` + `gap` 사용
+  - Tailwind CSS 유틸리티 우선 사용
+  - `next/image` 사용 (이미지 최적화)
+  - 관광지 기본 정보 표시 (이름, 주소, 썸네일, 타입 뱃지)
+- [ ] `components/TourList.tsx`
+  - React Query 훅 연동 (`useTourList`)
+  - 그리드 레이아웃 (반응형)
+  - Spacing-First 정책 준수
+- [ ] `hooks/useTourList.ts`
+  - React Query `useQuery` 활용
+  - `areaBasedList2` API 연동
+  - 페이지네이션 처리
+- [ ] API 연동하여 실제 데이터 표시
+- [ ] 페이지 확인 및 스타일링 조정 (반응형 검증)
+
+### 필터 기능
+
+- [ ] `components/TourFilter.tsx`
+  - Guideline 준수: 불필요한 추상화 금지
+  - shadcn/ui Select/Radio 컴포넌트 활용
+  - 지역 필터 (시/도)
+  - 관광 타입 필터
+  - Spacing-First 정책 준수
+- [ ] `hooks/useTourFilter.ts`
+  - 필터 상태 관리
+  - 필터링 로직 분리
+  - React Query와 연동
+- [ ] 필터 동작 연결
+- [ ] 필터링된 결과 표시
+- [ ] 페이지 확인 및 UX 개선
+
+### 검색 기능 (MVP 2.3)
+
+- [ ] `components/TourSearch.tsx`
+  - shadcn/ui Input 컴포넌트 활용
+  - 검색 아이콘 (lucide-react)
+  - Spacing-First 정책 준수
+- [ ] `hooks/useTourSearch.ts`
+  - 검색 로직 훅
+  - React Query 활용
+- [ ] 검색 API 연동 (`searchKeyword2`)
+- [ ] 검색 결과 표시
+- [ ] 검색 + 필터 조합 동작
+- [ ] 페이지 확인 및 UX 개선
+
+### 지도 연동 (MVP 2.2)
+
+- [ ] `components/GoogleMap.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - 동적 로딩: `next/dynamic` 활용 (필요할 때만 로드)
+  - Google Maps JavaScript API 로드
+  - 기본 지도 표시
+  - Spacing-First 정책 준수
+- [ ] `hooks/useGoogleMap.ts`
+  - 지도 초기화 및 상태 관리 훅
+  - 마커 관리 로직
+- [ ] 좌표 변환 유틸리티 활용 (`lib/utils/coordinate-converter.ts`)
+- [ ] 관광지 마커 표시
+- [ ] 마커 클릭 시 정보창(InfoWindow)
+  - 관광지명, 간단한 설명, "상세보기" 버튼
+- [ ] 리스트-지도 연동
+  - 리스트 항목 클릭 시 해당 마커로 지도 이동
+  - 리스트 항목 호버 시 해당 마커 강조 (선택 사항)
+- [ ] 마커 클러스터링
+  - `@googlemaps/markerclusterer` 라이브러리 설치 및 활용
+- [ ] 반응형 레이아웃
+  - 데스크톱: 리스트(좌측) + 지도(우측) 분할 레이아웃
+  - 모바일: 탭 형태로 리스트/지도 전환
+  - Spacing-First 정책: `gap` 사용
+- [ ] 페이지 확인 및 인터랙션 테스트
+
+### 정렬 & 페이지네이션
+
+- [ ] 정렬 옵션 추가
+  - 최신순 (modifiedtime 기준)
+  - 이름순 (가나다순)
+- [ ] 페이지네이션 또는 무한 스크롤
+  - shadcn/ui Pagination 컴포넌트 활용
+- [ ] 로딩 상태 개선
+  - Skeleton UI 적용
+- [ ] 최종 페이지 확인
+
+---
+
+## Phase 3: 상세페이지 (`/places/[contentId]`)
+
+### 📊 진행 상황: 0% 완료
+
+### 페이지 기본 구조
+
+- [ ] `app/places/[contentId]/page.tsx` 생성
+  - Next.js 15: `await params` 사용 필수
+  - `generateMetadata` 함수로 SEO 최적화
+  - Open Graph 메타태그 설정
+- [ ] 기본 레이아웃 구조
+  - 뒤로가기 버튼
+  - 섹션 구분
+  - Spacing-First 정책 준수
+- [ ] 라우팅 테스트 (홈에서 클릭 시 이동)
+
+### 기본 정보 섹션 (MVP 2.4.1)
+
+- [ ] `components/tour-detail/TourDetailInfo.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - `next/image` 사용 (이미지 최적화)
+  - Spacing-First 정책 준수
+  - 관광지명, 대표 이미지, 주소, 전화번호, 홈페이지, 개요 표시
+- [ ] `hooks/useTourDetail.ts`
+  - 상세 데이터 페칭 훅
+  - React Query 활용
+- [ ] `detailCommon2` API 연동
+- [ ] 주소 복사 기능
+  - `navigator.clipboard.writeText` 활용
+  - 토스트 메시지 표시
+- [ ] 전화번호 클릭 시 전화 연결
+  - `tel:` 링크 사용
+- [ ] 페이지 확인 및 스타일링 (반응형 검증)
+
+### 지도 섹션 (MVP 2.4.4)
+
+- [ ] `components/tour-detail/TourDetailMap.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - `GoogleMap` 컴포넌트 재사용
+  - Spacing-First 정책 준수
+- [ ] 해당 관광지 위치 표시 (마커 1개)
+- [ ] "길찾기" 버튼
+  - Google Maps 길찾기 링크 생성
+- [ ] "지도에서 보기" 버튼
+  - Google Maps 웹/앱 연동
+- [ ] 페이지 확인 (반응형 검증)
+
+### 공유 기능 (MVP 2.4.5)
+
+- [ ] `components/tour-detail/ShareButton.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - shadcn/ui Button 컴포넌트 활용
+- [ ] URL 복사 기능
+  - `navigator.clipboard.writeText` 활용
+- [ ] 복사 완료 토스트 메시지
+  - shadcn/ui Toast 활용
+- [ ] Open Graph 메타태그 동적 생성
+  - `generateMetadata` 함수에서 설정
+- [ ] 페이지 확인 및 공유 테스트
+
+### 추가 정보 섹션 (향후 구현)
+
+- [ ] `components/tour-detail/TourDetailIntro.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - 운영정보 표시 (운영시간, 휴무일, 이용요금, 주차 등)
+- [ ] `detailIntro2` API 연동 (React Query 활용)
+- [ ] `components/tour-detail/TourDetailGallery.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - `next/image` 사용 (이미지 최적화)
+  - Swiper 또는 캐러셀 컴포넌트 활용
+  - 이미지 클릭 시 전체화면 모달
+- [ ] `detailImage2` API 연동
+- [ ] 페이지 확인 (반응형 검증)
+
+---
+
+## Phase 4: 북마크 페이지 (`/bookmarks`) - 선택 사항
+
+### 📊 진행 상황: 30% 완료
+
+### Supabase 설정
+
+- [x] `supabase/migrations/` 마이그레이션 파일 생성 ✅
+- [x] `bookmarks` 테이블 생성 ✅
+  - [x] `id` (UUID, Primary Key) ✅
+  - [x] `user_id` (UUID, users 테이블 참조) ✅
+  - [x] `content_id` (TEXT, 관광지 ID) ✅
+  - [x] `created_at` (TIMESTAMP) ✅
+  - [x] 인덱스 설정 ✅
+  - [x] UNIQUE 제약 (user_id, content_id) ✅
+- [x] RLS 정책 설정 ✅
+  - [x] RLS 비활성화 (개발 환경) ✅
+  - [ ] 프로덕션용 RLS 정책 설정 필요
+
+### 북마크 기능 구현
+
+- [ ] `components/bookmarks/BookmarkButton.tsx`
+  - Guideline 준수: PascalCase 네이밍
+  - shadcn/ui Button 컴포넌트 활용
+  - 별 아이콘 (채워짐/비어있음)
+  - 북마크 상태 표시
+- [ ] `hooks/useBookmark.ts`
+  - 북마크 로직 훅
+  - React Query mutation 활용
+  - Supabase 클라이언트 연동
+- [ ] 상세페이지에 북마크 버튼 추가
+- [ ] Supabase DB 연동
+  - Server Actions 또는 API Route 사용
+- [ ] 인증된 사용자 확인
+  - Clerk `useUser` 훅 활용
+- [ ] 로그인하지 않은 경우 로그인 유도 모달
+  - Clerk SignIn 컴포넌트 활용
+- [ ] 상세페이지에서 북마크 동작 확인
+
+### 북마크 목록 페이지
+
+- [ ] `app/bookmarks/page.tsx` 생성
+  - Next.js 15: `await params` 사용 (필요시)
+  - `generateMetadata` 함수로 SEO 최적화
+  - 인증된 사용자만 접근 가능
+- [ ] `components/bookmarks/BookmarkList.tsx`
+  - `TourCard` 컴포넌트 재사용
+  - Guideline 준수: Spacing-First 정책
+- [ ] `hooks/useBookmarkList.ts`
+  - 북마크 목록 훅
+  - React Query 활용
+- [ ] 북마크한 관광지 목록 표시
+- [ ] 정렬 옵션
+  - 최신순, 이름순, 지역별
+- [ ] 일괄 삭제 기능
+- [ ] 페이지 확인 (반응형 검증)
+
+---
+
+## Phase 5: 최적화 & 배포
+
+### 📊 진행 상황: 10% 완료
+
+### 이미지 최적화
+
+- [x] `next.config.ts` 외부 도메인 설정 ✅
+  - [x] 기본 images 설정 확인 ✅
+  - [ ] 한국관광공사 이미지 도메인 허용 필요
+  - [ ] Google Maps 이미지 도메인 허용 필요
+- [ ] `next/image` 사용 확인
+  - 모든 이미지에 `Image` 컴포넌트 사용
+  - `loading="lazy"` 설정
+  - `priority` 속성 적절히 사용
+
+### 전역 에러 핸들링
+
+- [ ] Error Boundary 구현
+  - `components/ErrorBoundary.tsx` 활용
+- [ ] API 에러 처리 통일
+  - 에러 메시지 표시
+  - 재시도 버튼 제공
+- [ ] 네트워크 에러 처리
+  - 오프라인 안내
+
+### SEO 최적화
+
+- [ ] 메타태그 설정
+  - `generateMetadata` 함수 활용
+  - 동적 메타태그 생성
+- [ ] `sitemap.xml` 생성
+  - `app/sitemap.ts` 파일 확인
+- [ ] `robots.txt` 설정
+  - `app/robots.ts` 파일 확인
+- [ ] Open Graph 메타태그
+  - 모든 페이지에 적절한 OG 태그 설정
+
+### 성능 최적화
+
+- [ ] 동적 import 활용
+  - `next/dynamic` 사용
+  - Google Maps 동적 로딩
+  - 무거운 컴포넌트 lazy loading
+- [ ] React Query 캐싱 전략
+  - 적절한 `staleTime`, `cacheTime` 설정
+  - Query Key 전략 수립
+- [ ] 이미지 lazy loading
+  - 모든 이미지에 `loading="lazy"` 설정
+  - Above-the-fold 이미지는 `priority` 사용
+
+### 성능 측정
+
+- [ ] Lighthouse 점수 측정
+  - 목표: > 80점
+  - Performance, Accessibility, Best Practices, SEO
+- [ ] Core Web Vitals 측정
+  - LCP (Largest Contentful Paint)
+  - FID (First Input Delay)
+  - CLS (Cumulative Layout Shift)
+
+### 환경변수 보안 검증
+
+- [ ] API Key 도메인 제한 설정
+  - Google Maps API Key 제한
+  - 한국관광공사 API Key 제한 (가능한 경우)
+- [ ] 환경변수 노출 확인
+  - `NEXT_PUBLIC_` 접두사 확인
+  - 민감한 정보는 서버 사이드만 사용
+
+### Guideline 준수 최종 검토
+
+- [ ] 컴포넌트 네이밍 규칙 확인
+  - PascalCase 사용
+  - `[Domain][Role][Variant]` 패턴 준수
+  - 금지어 사용하지 않음 (Common, Base, Util 등)
+- [ ] Export 규칙 확인
+  - 단일 컴포넌트: `export default`
+  - 다중 export: named export
+  - 페이지 컴포넌트: `export default`
+- [ ] Spacing-First 정책 확인
+  - `margin` 사용하지 않음
+  - `padding` + `gap` 사용
+  - 외곽 여백은 상단 래퍼의 padding
+  - 형제 요소 간격은 부모의 gap
+- [ ] 불필요한 추상화 제거 확인
+  - 단순 스타일링 래퍼 컴포넌트 없음
+  - 의미 없는 컨테이너 컴포넌트 없음
+  - 불필요한 배럴 익스포트 없음
+- [ ] 스타일링 시스템 확인
+  - Tailwind CSS 유틸리티 우선 사용
+  - 인라인 스타일 사용하지 않음
+  - `next/image` 사용
+  - 배경 이미지: Image 컴포넌트 + 오버레이
+
+### 배포 준비
+
+- [ ] Vercel 배포 설정
+  - 환경변수 설정
+  - 도메인 연결
+- [ ] 배포 후 테스트
+  - 모든 페이지 동작 확인
+  - 반응형 디자인 확인
+  - 성능 측정
+  - SEO 확인
+
+---
+
+## 추가 작업 (선택 사항)
+
+### 향후 개선 사항
+
+- [ ] 반려동물 정보 표시 (`detailPetTour2` API)
+- [ ] 리뷰/평점 시스템 (Supabase 활용)
+- [ ] 조회수 추적
+- [ ] 인기 관광지 랭킹
+- [ ] 사용자 맞춤 추천
+- [ ] 다국어 지원 (i18n)
+- [ ] PWA 지원 (오프라인 기능)
+
+---
+
+## 참고사항
+
+### 필수 라이브러리 설치
+
+```bash
+# 좌표 변환
+pnpm add katec-to-wgs84
+
+# Google Maps 클러스터링
+pnpm add @googlemaps/markerclusterer
+
+# 이미지 슬라이더 (선택)
+pnpm add swiper
+```
+
+### shadcn/ui 컴포넌트 설치
+
+```bash
+# 필수 컴포넌트
+pnpx shadcn@latest add button
+pnpx shadcn@latest add input
+pnpx shadcn@latest add select
+pnpx shadcn@latest add radio-group
+pnpx shadcn@latest add skeleton
+pnpx shadcn@latest add toast
+pnpx shadcn@latest add pagination
+```
+
+### 개발 시 주의사항
+
+- 모든 컴포넌트는 PascalCase 네이밍 사용
+- Spacing-First 정책 준수 (`margin` 금지)
+- `next/image` 사용으로 이미지 최적화
+- React Query로 서버 상태 관리
+- Guideline 규칙 준수 확인
