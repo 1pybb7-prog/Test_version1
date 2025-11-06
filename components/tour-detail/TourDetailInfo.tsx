@@ -9,6 +9,7 @@ import type { TourDetail } from "@/lib/types/tour";
 import { getTourTypeName } from "@/lib/utils/tour-type-converter";
 import { Button } from "@/components/ui/button";
 import ShareButton from "./ShareButton";
+import BookmarkButton from "@/components/bookmarks/BookmarkButton";
 import { cn } from "@/lib/utils";
 
 /**
@@ -89,7 +90,14 @@ export default function TourDetailInfo({
             <h1 className="flex-1 text-3xl font-bold sm:text-4xl">
               {detail.title}
             </h1>
-            <ShareButton size="sm" variant="outline" />
+            <div className="flex items-center gap-2">
+              <BookmarkButton
+                contentId={detail.contentid}
+                size="sm"
+                variant="outline"
+              />
+              <ShareButton size="sm" variant="outline" />
+            </div>
           </div>
           {tourTypeName && (
             <div className="inline-flex items-center gap-2">

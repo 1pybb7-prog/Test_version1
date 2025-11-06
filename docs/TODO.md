@@ -281,23 +281,23 @@
 
 ### 북마크 기능 구현
 
-- [ ] `components/bookmarks/BookmarkButton.tsx`
+- [x] `components/bookmarks/BookmarkButton.tsx`
   - Guideline 준수: PascalCase 네이밍
   - shadcn/ui Button 컴포넌트 활용
   - 별 아이콘 (채워짐/비어있음)
   - 북마크 상태 표시
-- [ ] `hooks/useBookmark.ts`
+- [x] `hooks/useBookmark.ts`
   - 북마크 로직 훅
   - React Query mutation 활용
   - Supabase 클라이언트 연동
-- [ ] 상세페이지에 북마크 버튼 추가
-- [ ] Supabase DB 연동
+- [x] 상세페이지에 북마크 버튼 추가
+- [x] Supabase DB 연동
   - Server Actions 또는 API Route 사용
-- [ ] 인증된 사용자 확인
-  - Clerk `useUser` 훅 활용
-- [ ] 로그인하지 않은 경우 로그인 유도 모달
-  - Clerk SignIn 컴포넌트 활용
-- [ ] 상세페이지에서 북마크 동작 확인
+- [x] 인증된 사용자 확인
+  - Clerk `useAuth` 훅 활용
+- [x] 로그인하지 않은 경우 로그인 유도 모달
+  - Clerk SignInButton 컴포넌트 활용
+- [x] 상세페이지에서 북마크 동작 확인
 
 ### 북마크 목록 페이지
 
