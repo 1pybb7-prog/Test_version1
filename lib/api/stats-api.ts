@@ -23,20 +23,17 @@ import {
   getTourTypeName,
 } from "@/lib/utils/tour-type-converter";
 import type { RegionStats, StatsSummary, TypeStats } from "@/lib/types/stats";
+import { TOUR_API_BASE_URL, TOUR_API_COMMON_PARAMS } from "@/lib/api/constants";
 
 /**
  * API Base URL
  */
-const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
+const BASE_URL = TOUR_API_BASE_URL;
 
 /**
  * API 공통 파라미터
  */
-const COMMON_PARAMS = {
-  MobileOS: "ETC",
-  MobileApp: "MyTrip",
-  _type: "json",
-} as const;
+const COMMON_PARAMS = TOUR_API_COMMON_PARAMS;
 
 /**
  * API 응답 타입 (totalCount 포함)

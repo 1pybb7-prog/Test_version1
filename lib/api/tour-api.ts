@@ -26,20 +26,17 @@ import type {
   TourIntro,
   PetTourInfo,
 } from "@/lib/types/tour";
+import { TOUR_API_BASE_URL, TOUR_API_COMMON_PARAMS } from "@/lib/api/constants";
 
 /**
  * API Base URL
  */
-const BASE_URL = "https://apis.data.go.kr/B551011/KorService2";
+const BASE_URL = TOUR_API_BASE_URL;
 
 /**
  * API 공통 파라미터
  */
-const COMMON_PARAMS = {
-  MobileOS: "ETC",
-  MobileApp: "MyTrip",
-  _type: "json",
-} as const;
+const COMMON_PARAMS = TOUR_API_COMMON_PARAMS;
 
 /**
  * API 서비스 키 가져오기
