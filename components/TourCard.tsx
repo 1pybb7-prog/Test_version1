@@ -28,9 +28,9 @@ interface TourCardProps {
   isHovered?: boolean; // 호버된 상태
   onHover?: (tourId: string | undefined) => void; // 호버 핸들러
   petInfo?: {
-    chkpetleash?: string;
-    chkpetsize?: string;
-    chkpetplace?: string;
+    acmpyTypeCd?: string;
+    acmpyPsblCpam?: string;
+    acmpyNeedMtr?: string;
   } | null; // 반려동물 정보
   className?: string;
 }
@@ -106,19 +106,19 @@ export default function TourCard({
             {tourTypeName}
           </span>
           {/* 반려동물 동반 가능 아이콘 */}
-          {petInfo?.chkpetleash && (
+          {petInfo?.acmpyTypeCd && (
             <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
               <span className="text-sm">🐾</span>
-              {petInfo.chkpetsize && (
+              {petInfo.acmpyPsblCpam && (
                 <span className="text-[10px]">
-                  {petInfo.chkpetsize.includes("소형") ||
-                  petInfo.chkpetsize.includes("소")
+                  {petInfo.acmpyPsblCpam.includes("소형") ||
+                  petInfo.acmpyPsblCpam.includes("소")
                     ? "소형"
-                    : petInfo.chkpetsize.includes("중형") ||
-                      petInfo.chkpetsize.includes("중")
+                    : petInfo.acmpyPsblCpam.includes("중형") ||
+                      petInfo.acmpyPsblCpam.includes("중")
                     ? "중형"
-                    : petInfo.chkpetsize.includes("대형") ||
-                      petInfo.chkpetsize.includes("대")
+                    : petInfo.acmpyPsblCpam.includes("대형") ||
+                      petInfo.acmpyPsblCpam.includes("대")
                     ? "대형"
                     : ""}
                 </span>

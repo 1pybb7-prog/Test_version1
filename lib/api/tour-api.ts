@@ -84,12 +84,24 @@ function getPetTourServiceKey(): string {
     process.env.NEXT_PUBLIC_TOUR_PET_API_KEY || process.env.TOUR_PET_API_KEY;
 
   if (!key) {
+    console.error("[Tour API] 환경 변수 확인:", {
+      NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+        ? "설정됨"
+        : "미설정",
+      TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+    });
     throw new Error(
       "TOUR_PET_API_KEY 환경변수가 설정되지 않았습니다. NEXT_PUBLIC_TOUR_PET_API_KEY 또는 TOUR_PET_API_KEY를 설정해주세요.",
     );
   }
 
-  return key;
+  // 환경 변수가 제대로 읽혔는지 확인 (키 값은 로그에 출력하지 않음)
+  console.log(
+    "[Tour API] 반려동물 API 키 로드 성공:",
+    key.length > 0 ? `${key.substring(0, 8)}...` : "빈 값",
+  );
+
+  return key.trim();
 }
 
 /**
@@ -340,13 +352,59 @@ export async function getDetailPetTour(
       return null;
     }
 
+    // 더 자세한 응답 구조 로깅 (디버깅용)
+    console.log(`[Tour API] detailPetTour2 응답 구조: ${contentId}`, {
+      resultCode: data.response.header.resultCode,
+      totalCount: data.response.body.totalCount,
+      itemsType: typeof data.response.body.items,
+      itemsValue: data.response.body.items,
+      hasItem:
+        data.response.body.items &&
+        typeof data.response.body.items === "object" &&
+        "item" in data.response.body.items,
+    });
+
     // 데이터 추출
-    const items = data.response.body.items?.item;
+    // items가 빈 문자열이거나 null인 경우 처리
+    if (
+      !data.response.body.items ||
+      (typeof data.response.body.items === "string" &&
+        data.response.body.items === "")
+    ) {
+      console.log(
+        `[Tour API] detailPetTour2 데이터 없음 (items가 빈 문자열): ${contentId}`,
+        {
+          body: data.response.body,
+          items: data.response.body.items,
+          totalCount: data.response.body.totalCount,
+        },
+      );
+      return null;
+    }
+
+    // items가 객체가 아닌 경우 처리
+    if (typeof data.response.body.items !== "object") {
+      console.log(
+        `[Tour API] detailPetTour2 데이터 없음 (items가 객체가 아님): ${contentId}`,
+        {
+          body: data.response.body,
+          items: data.response.body.items,
+          itemsType: typeof data.response.body.items,
+        },
+      );
+      return null;
+    }
+
+    const items = data.response.body.items.item;
     if (!items) {
-      console.log(`[Tour API] detailPetTour2 데이터 없음: ${contentId}`, {
-        body: data.response.body,
-        items: data.response.body.items,
-      });
+      console.log(
+        `[Tour API] detailPetTour2 데이터 없음 (item이 없음): ${contentId}`,
+        {
+          body: data.response.body,
+          items: data.response.body.items,
+          totalCount: data.response.body.totalCount,
+        },
+      );
       return null;
     }
 
@@ -356,13 +414,15 @@ export async function getDetailPetTour(
 
     if (petInfo) {
       console.log(`[Tour API] detailPetTour2 성공: ${contentId}`, {
-        chkpetleash: petInfo.chkpetleash,
-        chkpetsize: petInfo.chkpetsize,
+        acmpyTypeCd: petInfo.acmpyTypeCd,
+        acmpyPsblCpam: petInfo.acmpyPsblCpam,
+        acmpyNeedMtr: petInfo.acmpyNeedMtr,
+        etcAcmpyInfo: petInfo.etcAcmpyInfo,
         hasPetInfo: Boolean(
-          petInfo.chkpetleash ||
-            petInfo.petinfo ||
-            petInfo.chkpetsize ||
-            petInfo.chkpetplace,
+          petInfo.acmpyTypeCd ||
+            petInfo.acmpyPsblCpam ||
+            petInfo.acmpyNeedMtr ||
+            petInfo.etcAcmpyInfo,
         ),
       });
     }

@@ -219,43 +219,41 @@ export function usePetTourFilter({
         return false;
       }
 
-      // 반려동물 정보가 있는지 확인 (chkpetleash, petinfo, chkpetsize 등)
+      // 반려동물 정보가 있는지 확인 (acmpyTypeCd, etcAcmpyInfo 등)
       const hasPetInfo =
-        petInfo.chkpetleash ||
-        petInfo.petinfo ||
-        petInfo.chkpetsize ||
-        petInfo.chkpetplace ||
-        petInfo.chkpetfee ||
-        petInfo.parking;
+        petInfo.acmpyTypeCd ||
+        petInfo.acmpyPsblCpam ||
+        petInfo.acmpyNeedMtr ||
+        petInfo.etcAcmpyInfo;
 
       // 반려동물 정보가 전혀 없는 경우 제외
       if (!hasPetInfo) {
         return false;
       }
 
-      // chkpetleash가 있는 경우, "불가능"인지 확인
-      if (petInfo.chkpetleash) {
-        const leashValue = petInfo.chkpetleash.trim();
+      // acmpyTypeCd가 있는 경우, "불가능"인지 확인
+      if (petInfo.acmpyTypeCd) {
+        const typeValue = petInfo.acmpyTypeCd.trim();
         // "불가능"인 경우 제외
-        if (leashValue === "불가능" || leashValue.includes("불가")) {
+        if (typeValue === "불가능" || typeValue.includes("불가")) {
           return false;
         }
-        // "가능" 또는 긍정적인 값이 있으면 통과 (chkpetleash가 있으면 통과)
+        // "가능" 또는 긍정적인 값이 있으면 통과
       } else {
-        // chkpetleash가 없어도 다른 반려동물 정보(petinfo 등)가 있으면 포함
+        // acmpyTypeCd가 없어도 다른 반려동물 정보가 있으면 포함
         // 단, 명시적으로 "불가능"이라고 표시된 경우는 제외
         if (
-          petInfo.petinfo &&
-          (petInfo.petinfo.includes("불가능") ||
-            petInfo.petinfo.includes("불가"))
+          petInfo.etcAcmpyInfo &&
+          (petInfo.etcAcmpyInfo.includes("불가능") ||
+            petInfo.etcAcmpyInfo.includes("불가"))
         ) {
           return false;
         }
       }
 
-      // 반려동물 크기 필터
+      // 반려동물 크기 필터 (acmpyPsblCpam에서 크기 정보 추출)
       if (petSize) {
-        const sizeText = petInfo.chkpetsize || "";
+        const sizeText = petInfo.acmpyPsblCpam || petInfo.acmpyNeedMtr || "";
         const sizeMatch =
           (petSize === "small" &&
             (sizeText.includes("소형") || sizeText.includes("소"))) ||
@@ -271,9 +269,9 @@ export function usePetTourFilter({
       // 반려동물 종류 필터 (API 응답에 종류 정보가 없을 수 있음)
       // 일단 구현하지 않음
 
-      // 실내/실외 필터
+      // 실내/실외 필터 (acmpyNeedMtr에서 장소 정보 추출)
       if (petPlace) {
-        const placeText = petInfo.chkpetplace || "";
+        const placeText = petInfo.acmpyNeedMtr || petInfo.etcAcmpyInfo || "";
         const placeMatch =
           (petPlace === "indoor" &&
             (placeText.includes("실내") || placeText.includes("내"))) ||

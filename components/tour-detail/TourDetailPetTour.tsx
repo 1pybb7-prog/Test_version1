@@ -80,12 +80,10 @@ export default function TourDetailPetTour({
 
   // 표시할 정보가 있는지 확인
   const hasInfo =
-    petInfo.chkpetleash ||
-    petInfo.chkpetsize ||
-    petInfo.chkpetplace ||
-    petInfo.chkpetfee ||
-    petInfo.petinfo ||
-    petInfo.parking;
+    petInfo.acmpyTypeCd ||
+    petInfo.acmpyPsblCpam ||
+    petInfo.acmpyNeedMtr ||
+    petInfo.etcAcmpyInfo;
 
   // 정보가 하나도 없으면 숨김
   if (!hasInfo) {
@@ -100,42 +98,28 @@ export default function TourDetailPetTour({
       </div>
 
       <div className="flex flex-col gap-6">
-        {/* 반려동물 동반 가능 여부 */}
-        <InfoItem
-          icon={Heart}
-          label="반려동물 동반 가능 여부"
-          value={petInfo.chkpetleash}
-        />
+        {/* 동반 타입 (전구역/일부구역 동반가능) */}
+        <InfoItem icon={Heart} label="동반 타입" value={petInfo.acmpyTypeCd} />
 
-        {/* 반려동물 크기 제한 */}
+        {/* 동반 가능 (견종 제한) */}
         <InfoItem
           icon={Ruler}
-          label="반려동물 크기 제한"
-          value={petInfo.chkpetsize}
+          label="동반 가능"
+          value={petInfo.acmpyPsblCpam}
         />
 
-        {/* 입장 가능 장소 (실내/실외) */}
+        {/* 동반 필요 사항 */}
         <InfoItem
           icon={MapPin}
-          label="입장 가능 장소"
-          value={petInfo.chkpetplace}
+          label="동반 필요 사항"
+          value={petInfo.acmpyNeedMtr}
         />
 
-        {/* 추가 요금 */}
-        <InfoItem
-          icon={DollarSign}
-          label="반려동물 동반 추가 요금"
-          value={petInfo.chkpetfee}
-        />
-
-        {/* 주차장 정보 */}
-        <InfoItem icon={Car} label="주차장 정보" value={petInfo.parking} />
-
-        {/* 기타 반려동물 정보 */}
+        {/* 기타 동반 정보 */}
         <InfoItem
           icon={Info}
-          label="기타 반려동물 정보"
-          value={petInfo.petinfo}
+          label="기타 동반 정보"
+          value={petInfo.etcAcmpyInfo}
         />
       </div>
     </div>

@@ -136,17 +136,23 @@ export interface PetTourInfo {
   /** 콘텐츠ID (고유 식별자) */
   contentid: string;
   /** 콘텐츠타입ID (관광 타입: 12, 14, 15, 25, 28, 32, 38, 39) */
-  contenttypeid: string;
-  /** 애완동물 동반 여부 */
-  chkpetleash?: string;
-  /** 애완동물 크기 */
-  chkpetsize?: string;
-  /** 입장 가능 장소 (실내/실외) */
-  chkpetplace?: string;
-  /** 추가 요금 */
-  chkpetfee?: string;
-  /** 기타 반려동물 정보 */
-  petinfo?: string;
-  /** 주차장 정보 */
-  parking?: string;
+  contenttypeid?: string;
+  /** 동반 타입 코드 (예: "전구역 동반가능", "일부구역 동반가능") */
+  acmpyTypeCd?: string;
+  /** 동반 가능 캠프 (예: "전 견종 동반 가능") */
+  acmpyPsblCpam?: string;
+  /** 동반 필요 사항 (예: "목줄 착용", "반려동물 유모차 탑승" 등) */
+  acmpyNeedMtr?: string;
+  /** 기타 동반 정보 (주의사항 등) */
+  etcAcmpyInfo?: string;
+  /** 사고 위험 물질 */
+  relaAcdntRiskMtr?: string;
+  /** 관련 포즈 시설 */
+  relaPosesFclty?: string;
+  /** 관련 가구 제품 목록 */
+  relaFrnshPrdlst?: string;
+  /** 관련 구매 제품 목록 */
+  relaPurcPrdlst?: string;
+  /** 관련 렌탈 제품 목록 */
+  relaRntlPrdlst?: string;
 }
