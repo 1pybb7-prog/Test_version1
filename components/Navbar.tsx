@@ -17,6 +17,11 @@ const Navbar = () => {
         </Button>
       </Link>
       <div className="flex gap-4 items-center">
+        <Link href="/stats">
+          <Button variant="ghost" className="hidden sm:flex">
+            통계
+          </Button>
+        </Link>
         <SignedOut>
           <SignInButton mode="modal">
             <Button>로그인</Button>

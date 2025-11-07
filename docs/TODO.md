@@ -445,73 +445,73 @@
 
 ### 타입 정의
 
-- [ ] `lib/types/stats.ts` 생성
-  - [ ] `RegionStats` 인터페이스 (지역별 통계)
-  - [ ] `TypeStats` 인터페이스 (타입별 통계)
-  - [ ] `StatsSummary` 인터페이스 (통계 요약)
+- [x] `lib/types/stats.ts` 생성
+  - [x] `RegionStats` 인터페이스 (지역별 통계)
+  - [x] `TypeStats` 인터페이스 (타입별 통계)
+  - [x] `StatsSummary` 인터페이스 (통계 요약)
 
 ### 통계 데이터 수집
 
-- [ ] `lib/api/stats-api.ts` 생성
-  - [ ] `getRegionStats()` - 지역별 관광지 개수 집계
-  - [ ] `getTypeStats()` - 타입별 관광지 개수 집계
-  - [ ] `getStatsSummary()` - 전체 통계 요약
-  - [ ] 병렬 API 호출로 성능 최적화
-  - [ ] 에러 처리 및 재시도 로직
-  - [ ] 데이터 캐싱 설정 (revalidate: 3600)
+- [x] `lib/api/stats-api.ts` 생성
+  - [x] `getRegionStats()` - 지역별 관광지 개수 집계
+  - [x] `getTypeStats()` - 타입별 관광지 개수 집계
+  - [x] `getStatsSummary()` - 전체 통계 요약
+  - [x] 병렬 API 호출로 성능 최적화
+  - [x] 에러 처리 및 재시도 로직
+  - [x] 데이터 캐싱 설정 (revalidate: 3600)
 
 ### 통계 요약 카드
 
-- [ ] `components/stats/StatsSummary.tsx` 생성
-  - [ ] Guideline 준수: PascalCase 네이밍
-  - [ ] 전체 관광지 수 표시
-  - [ ] Top 3 지역 표시
-  - [ ] Top 3 타입 표시
-  - [ ] 마지막 업데이트 시간 표시
-  - [ ] 카드 레이아웃 디자인
-  - [ ] Spacing-First 정책 준수
-  - [ ] 로딩 상태 (Skeleton UI)
-  - [ ] 다크/라이트 모드 지원
+- [x] `components/stats/StatsSummary.tsx` 생성
+  - [x] Guideline 준수: PascalCase 네이밍
+  - [x] 전체 관광지 수 표시
+  - [x] Top 3 지역 표시
+  - [x] Top 3 타입 표시
+  - [x] 마지막 업데이트 시간 표시
+  - [x] 카드 레이아웃 디자인
+  - [x] Spacing-First 정책 준수
+  - [x] 로딩 상태 (Skeleton UI)
+  - [x] 다크/라이트 모드 지원
 
 ### 지역별 분포 차트 (Bar Chart)
 
-- [ ] `components/stats/RegionChart.tsx` 생성
-  - [ ] Guideline 준수: PascalCase 네이밍
-  - [ ] shadcn/ui Chart 컴포넌트 설치 (Bar)
-  - [ ] recharts 기반 Bar Chart 구현
-  - [ ] X축: 지역명, Y축: 관광지 개수
-  - [ ] 바 클릭 시 해당 지역 목록 페이지로 이동
-  - [ ] 호버 시 정확한 개수 표시
-  - [ ] 다크/라이트 모드 지원
-  - [ ] 반응형 디자인
-  - [ ] 로딩 상태
-  - [ ] 접근성 (ARIA 라벨, 키보드 네비게이션)
+- [x] `components/stats/RegionChart.tsx` 생성
+  - [x] Guideline 준수: PascalCase 네이밍
+  - [x] shadcn/ui Chart 컴포넌트 설치 (Bar)
+  - [x] recharts 기반 Bar Chart 구현
+  - [x] X축: 지역명, Y축: 관광지 개수
+  - [x] 바 클릭 시 해당 지역 목록 페이지로 이동
+  - [x] 호버 시 정확한 개수 표시
+  - [x] 다크/라이트 모드 지원
+  - [x] 반응형 디자인
+  - [x] 로딩 상태
+  - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
 
 ### 타입별 분포 차트 (Donut Chart)
 
-- [ ] `components/stats/TypeChart.tsx` 생성
-  - [ ] Guideline 준수: PascalCase 네이밍
-  - [ ] shadcn/ui Chart 컴포넌트 설치 (Pie/Donut)
-  - [ ] recharts 기반 Donut Chart 구현
-  - [ ] 타입별 비율 및 개수 표시
-  - [ ] 섹션 클릭 시 해당 타입 목록 페이지로 이동
-  - [ ] 호버 시 타입명, 개수, 비율 표시
-  - [ ] 다크/라이트 모드 지원
-  - [ ] 반응형 디자인
-  - [ ] 로딩 상태
-  - [ ] 접근성 (ARIA 라벨)
+- [x] `components/stats/TypeChart.tsx` 생성
+  - [x] Guideline 준수: PascalCase 네이밍
+  - [x] shadcn/ui Chart 컴포넌트 설치 (Pie/Donut)
+  - [x] recharts 기반 Donut Chart 구현
+  - [x] 타입별 비율 및 개수 표시
+  - [x] 섹션 클릭 시 해당 타입 목록 페이지로 이동
+  - [x] 호버 시 타입명, 개수, 비율 표시
+  - [x] 다크/라이트 모드 지원
+  - [x] 반응형 디자인
+  - [x] 로딩 상태
+  - [x] 접근성 (ARIA 라벨)
 
 ### 페이지 통합 및 최적화
 
-- [ ] `app/stats/page.tsx`에 모든 컴포넌트 통합
-  - [ ] 통계 요약 카드 (상단)
-  - [ ] 지역별 분포 차트 (중단)
-  - [ ] 타입별 분포 차트 (하단)
-- [ ] Server Component로 구현
-- [ ] 데이터 캐싱 설정 (revalidate: 3600)
-- [ ] 에러 처리 (에러 메시지 + 재시도 버튼)
-- [ ] 네비게이션에 통계 페이지 링크 추가
-- [ ] 최종 페이지 확인 (반응형 검증)
+- [x] `app/stats/page.tsx`에 모든 컴포넌트 통합
+  - [x] 통계 요약 카드 (상단)
+  - [x] 지역별 분포 차트 (중단)
+  - [x] 타입별 분포 차트 (하단)
+- [x] Server Component로 구현
+- [x] 데이터 캐싱 설정 (revalidate: 3600)
+- [x] 에러 처리 (에러 메시지 + 재시도 버튼)
+- [x] 네비게이션에 통계 페이지 링크 추가
+- [x] 최종 페이지 확인 (반응형 검증)
 
 ---
 
