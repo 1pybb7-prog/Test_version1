@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import type { SortOption } from "@/lib/utils/tour-sorter";
 import { cn } from "@/lib/utils";
+import TourBookmarkFilter from "@/components/TourBookmarkFilter";
 
 /**
  * @file TourSort.tsx
@@ -28,6 +29,10 @@ import { cn } from "@/lib/utils";
 interface TourSortProps {
   sortOption: SortOption;
   onSortChange?: (sortOption: SortOption) => void;
+  /** 북마크 필터 활성화 여부 */
+  isBookmarkFilterActive?: boolean;
+  /** 북마크 필터 토글 핸들러 */
+  onBookmarkFilterToggle?: () => void;
   className?: string;
 }
 
@@ -42,6 +47,8 @@ const SORT_OPTIONS = [
 export default function TourSort({
   sortOption,
   onSortChange,
+  isBookmarkFilterActive = false,
+  onBookmarkFilterToggle,
   className,
 }: TourSortProps) {
   /**
@@ -76,6 +83,14 @@ export default function TourSort({
           </SelectContent>
         </Select>
       </div>
+
+      {/* 북마크 필터 */}
+      {onBookmarkFilterToggle && (
+        <TourBookmarkFilter
+          isBookmarkFilterActive={isBookmarkFilterActive}
+          onToggle={onBookmarkFilterToggle}
+        />
+      )}
     </div>
   );
 }

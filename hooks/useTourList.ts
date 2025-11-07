@@ -20,6 +20,7 @@ interface UseTourListOptions {
   contentTypeId?: string;
   numOfRows?: number;
   pageNo?: number;
+  enabled?: boolean; // 쿼리 실행 여부 제어
 }
 
 /**
@@ -29,6 +30,7 @@ interface UseTourListOptions {
  * @returns React Query 결과
  */
 export function useTourList(options: UseTourListOptions = {}) {
+  const { enabled = true } = options;
   return useQuery({
     queryKey: ["tours", "list", options],
     queryFn: async (): Promise<TourItem[]> => {
@@ -39,6 +41,7 @@ export function useTourList(options: UseTourListOptions = {}) {
         pageNo: options.pageNo ?? 1,
       });
     },
+    enabled,
     staleTime: 60 * 1000, // 1분
     gcTime: 5 * 60 * 1000, // 5분
     retry: 1, // 실패 시 1회 재시도

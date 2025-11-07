@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TourList from "@/components/TourList";
 import TourFilter from "@/components/TourFilter";
 import TourSearch from "@/components/TourSearch";
@@ -12,6 +12,7 @@ import { useTourFilter } from "@/hooks/useTourFilter";
 import { useTourSort } from "@/hooks/useTourSort";
 import { useTourList } from "@/hooks/useTourList";
 import { useTourSearch } from "@/hooks/useTourSearch";
+import { useBookmarkList } from "@/hooks/useBookmarkList";
 import { List, Map } from "lucide-react";
 import type { TourItem } from "@/lib/types/tour";
 
@@ -44,18 +45,27 @@ export default function Home() {
   const [pageNo, setPageNo] = useState(1);
   const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
   const [hoveredTourId, setHoveredTourId] = useState<string | undefined>();
+  const [isBookmarkFilterActive, setIsBookmarkFilterActive] = useState(false);
   const numOfRows = 12; // 페이지당 항목 수
+
+  // 북마크 목록 조회
+  const { bookmarkedContentIds } = useBookmarkList();
 
   // 검색 모드 여부 확인
   const isSearchMode = Boolean(searchKeyword && searchKeyword.trim() !== "");
 
-  // 필터/검색 변경 시 페이지 리셋 및 선택 초기화
+  // 필터/검색/북마크 필터 변경 시 페이지 리셋 및 선택 초기화
   useEffect(() => {
     setPageNo(1);
     setSelectedTourId(undefined);
     setHoveredTourId(undefined);
-    console.log("[Home] 필터/검색 변경으로 페이지 1로 리셋");
-  }, [filters.areaCode, filters.contentTypeId, searchKeyword]);
+    console.log("[Home] 필터/검색/북마크 필터 변경으로 페이지 1로 리셋");
+  }, [
+    filters.areaCode,
+    filters.contentTypeId,
+    searchKeyword,
+    isBookmarkFilterActive,
+  ]);
 
   // 일반 모드: useTourList 사용
   const listQuery = useTourList({
@@ -76,9 +86,28 @@ export default function Home() {
   });
 
   // 현재 사용할 데이터 결정
-  const { data: tours = [], isLoading } = isSearchMode
+  const { data: rawTours = [], isLoading } = isSearchMode
     ? searchQuery
     : listQuery;
+
+  // 북마크 필터 적용
+  const tours = useMemo(() => {
+    if (!isBookmarkFilterActive) {
+      return rawTours;
+    }
+
+    // 북마크된 관광지만 필터링
+    const filtered = rawTours.filter((tour) =>
+      bookmarkedContentIds.has(tour.contentid),
+    );
+    console.log(
+      "[Home] 북마크 필터 적용:",
+      rawTours.length,
+      "->",
+      filtered.length,
+    );
+    return filtered;
+  }, [rawTours, isBookmarkFilterActive, bookmarkedContentIds]);
 
   /**
    * 검색 실행 핸들러
@@ -139,6 +168,14 @@ export default function Home() {
     }
   };
 
+  /**
+   * 북마크 필터 토글 핸들러
+   */
+  const handleBookmarkFilterToggle = () => {
+    setIsBookmarkFilterActive((prev) => !prev);
+    console.log("[Home] 북마크 필터 토글:", !isBookmarkFilterActive);
+  };
+
   return (
     <main className="min-h-[calc(100vh-80px)]">
       {/* 헤더 섹션 */}
@@ -178,7 +215,12 @@ export default function Home() {
 
       {/* 정렬 섹션 */}
       <section className="border-b bg-background">
-        <TourSort sortOption={sortOption} onSortChange={setSortOption} />
+        <TourSort
+          sortOption={sortOption}
+          onSortChange={setSortOption}
+          isBookmarkFilterActive={isBookmarkFilterActive}
+          onBookmarkFilterToggle={handleBookmarkFilterToggle}
+        />
       </section>
 
       {/* 관광지 목록 + 지도 섹션 */}
@@ -199,6 +241,8 @@ export default function Home() {
 
             <TabsContent value="list" className="flex flex-col gap-6">
               <TourList
+                tours={tours}
+                isLoading={isLoading}
                 keyword={searchKeyword}
                 areaCode={filters.areaCode}
                 contentTypeId={filters.contentTypeId}
@@ -208,6 +252,7 @@ export default function Home() {
                 selectedTourId={selectedTourId}
                 hoveredTourId={hoveredTourId}
                 onTourHover={handleTourHover}
+                isBookmarkFilterActive={isBookmarkFilterActive}
               />
               {/* 페이지네이션 */}
               {!isLoading && tours.length > 0 && (
@@ -236,6 +281,8 @@ export default function Home() {
           {/* 리스트 뷰 (좌측 50%) */}
           <div className="flex flex-col gap-6 overflow-y-auto lg:max-h-[calc(100vh-8rem)]">
             <TourList
+              tours={tours}
+              isLoading={isLoading}
               keyword={searchKeyword}
               areaCode={filters.areaCode}
               contentTypeId={filters.contentTypeId}
@@ -245,6 +292,7 @@ export default function Home() {
               selectedTourId={selectedTourId}
               hoveredTourId={hoveredTourId}
               onTourHover={handleTourHover}
+              isBookmarkFilterActive={isBookmarkFilterActive}
             />
             {/* 페이지네이션 */}
             {!isLoading && tours.length > 0 && (

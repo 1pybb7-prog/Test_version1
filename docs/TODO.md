@@ -330,33 +330,33 @@
 
 #### 임베디드 지도 구현
 
-- [ ] `NaverMapSingle` 컴포넌트 연동
-  - [ ] `components/tour-detail/TourDetailMap.tsx`에 지도 표시 추가
-  - [ ] 동적 로딩: `next/dynamic` 활용
-  - [ ] 단일 관광지 위치 표시
-  - [ ] 마커 1개 표시
-  - [ ] 지도 크기: `aspect-square` 또는 고정 높이
-- [ ] 좌표 변환
-  - [ ] `detailCommon2` API에서 `mapx`, `mapy` 가져오기
-  - [ ] KATEC 좌표계 변환 (`coordinate-converter.ts` 활용)
-  - [ ] Naver Maps 좌표 형식으로 변환
-- [ ] 지도 컨트롤
-  - [ ] 줌 레벨 설정 (관광지 중심으로 적절한 줌)
-  - [ ] 줌 인/아웃 컨트롤 표시
-- [ ] 버튼 기능 유지
+- [x] `NaverMapSingle` 컴포넌트 연동 ✅
+  - [x] `components/tour-detail/TourDetailMap.tsx`에 지도 표시 추가 ✅
+  - [x] 동적 로딩: `next/dynamic` 활용 ✅
+  - [x] 단일 관광지 위치 표시 ✅
+  - [x] 마커 1개 표시 ✅
+  - [x] 지도 크기: `aspect-square` 또는 고정 높이 ✅
+- [x] 좌표 변환 ✅
+  - [x] `detailCommon2` API에서 `mapx`, `mapy` 가져오기 ✅
+  - [x] KATEC 좌표계 변환 (`coordinate-converter.ts` 활용) ✅
+  - [x] Naver Maps 좌표 형식으로 변환 ✅
+- [x] 지도 컨트롤 ✅
+  - [x] 줌 레벨 설정 (관광지 중심으로 적절한 줌) ✅
+  - [x] 줌 인/아웃 컨트롤 표시 ✅
+- [x] 버튼 기능 유지 ✅
   - [x] "길찾기" 버튼 (Naver Maps 길찾기 링크) ✅
   - [x] "지도에서 보기" 버튼 (Naver Maps 웹/앱 연동) ✅
 
 #### 레이아웃 및 스타일링
 
-- [ ] 지도 섹션 레이아웃
-  - [ ] 주소 정보 + 지도 + 버튼 순서
-  - [ ] Spacing-First 정책 준수 (`gap` 사용)
-  - [ ] 반응형 디자인 (모바일/데스크톱)
-- [ ] 지도 컨테이너 스타일링
-  - [ ] 테두리 및 둥근 모서리
-  - [ ] 적절한 높이 설정
-  - [ ] 오버플로우 처리
+- [x] 지도 섹션 레이아웃 ✅
+  - [x] 주소 정보 + 지도 + 버튼 순서 ✅
+  - [x] Spacing-First 정책 준수 (`gap` 사용) ✅
+  - [x] 반응형 디자인 (모바일/데스크톱) ✅
+- [x] 지도 컨테이너 스타일링 ✅
+  - [x] 테두리 및 둥근 모서리 ✅
+  - [x] 적절한 높이 설정 ✅
+  - [x] 오버플로우 처리 ✅
 
 #### 테스트 및 검증
 

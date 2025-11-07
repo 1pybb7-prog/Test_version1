@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import dynamic from "next/dynamic";
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { TourDetail } from "@/lib/types/tour";
@@ -14,12 +15,21 @@ import { cn } from "@/lib/utils";
  * 관광지의 위치 정보를 표시하고, 외부 지도 서비스 연동 기능을 제공합니다.
  *
  * 주요 기능:
- * 1. "길찾기" 버튼 (Naver Maps 길찾기 링크)
- * 2. "지도에서 보기" 버튼 (Naver Maps 웹/앱 연동)
+ * 1. 임베디드 지도 표시 (NaverMapSingle 컴포넌트)
+ * 2. "길찾기" 버튼 (Naver Maps 길찾기 링크)
+ * 3. "지도에서 보기" 버튼 (Naver Maps 웹/앱 연동)
  *
  * @see {@link /docs/prd.md#244-지도-섹션} - PRD 문서의 지도 섹션
  * @see {@link /docs/reference/design/Design.md#3-상세페이지} - 디자인 문서의 상세페이지
  */
+
+// NaverMapSingle 컴포넌트를 동적 로딩 (SSR 비활성화)
+const NaverMapSingle = dynamic(() => import("@/components/NaverMapSingle"), {
+  ssr: false,
+  loading: () => (
+    <div className="aspect-square w-full rounded-lg border border-border bg-muted/50" />
+  ),
+});
 
 interface TourDetailMapProps {
   detail: TourDetail;
@@ -93,23 +103,34 @@ export default function TourDetailMap({
   const mapUrl = getMapUrl(coordinates.lat, coordinates.lng, detail.title);
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("flex flex-col gap-4 md:gap-6", className)}>
       {/* 섹션 제목 */}
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">위치 정보</h2>
+      <div className="flex flex-col gap-2 md:gap-3">
+        <h2 className="text-xl font-semibold md:text-2xl">위치 정보</h2>
         <div className="flex items-start gap-2 text-muted-foreground">
-          <MapPin className="size-5 shrink-0 mt-0.5" />
+          <MapPin className="size-5 shrink-0 mt-0.5 md:size-6" />
           <div className="flex flex-col gap-1">
-            {detail.addr1 && <p className="text-sm">{detail.addr1}</p>}
+            {detail.addr1 && (
+              <p className="text-sm md:text-base">{detail.addr1}</p>
+            )}
             {detail.addr2 && (
-              <p className="text-sm text-muted-foreground/80">{detail.addr2}</p>
+              <p className="text-sm text-muted-foreground/80 md:text-base">
+                {detail.addr2}
+              </p>
             )}
           </div>
         </div>
       </div>
 
+      {/* 임베디드 지도 */}
+      <NaverMapSingle
+        detail={detail}
+        height="aspect-square md:h-[500px]"
+        className="w-full"
+      />
+
       {/* 액션 버튼 */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row md:gap-4">
         <Button
           asChild
           variant="default"

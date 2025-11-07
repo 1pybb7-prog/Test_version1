@@ -28,6 +28,8 @@ import type { TourItem } from "@/lib/types/tour";
  */
 
 interface TourListProps {
+  tours?: TourItem[]; // 필터링된 관광지 목록 (전달되면 이것을 사용)
+  isLoading?: boolean; // 로딩 상태 (tours prop 전달 시 함께 전달)
   keyword?: string; // 검색 키워드 (있으면 검색 모드, 없으면 일반 모드)
   areaCode?: string;
   contentTypeId?: string;
@@ -38,6 +40,7 @@ interface TourListProps {
   hoveredTourId?: string; // 호버된 관광지 ID
   onTourHover?: (tourId: string | undefined) => void; // 관광지 호버 핸들러
   className?: string;
+  isBookmarkFilterActive?: boolean; // 북마크 필터 활성화 여부
 }
 
 /**
@@ -59,7 +62,27 @@ function TourCardSkeleton() {
 /**
  * 빈 상태 컴포넌트
  */
-function EmptyState({ isSearchMode }: { isSearchMode?: boolean }) {
+function EmptyState({
+  isSearchMode,
+  isBookmarkFilterActive,
+}: {
+  isSearchMode?: boolean;
+  isBookmarkFilterActive?: boolean;
+}) {
+  if (isBookmarkFilterActive) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+        <AlertCircle className="size-12 text-muted-foreground" />
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-semibold">북마크한 관광지가 없습니다</h3>
+          <p className="text-sm text-muted-foreground">
+            관광지를 북마크하면 여기에 표시됩니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
       <AlertCircle className="size-12 text-muted-foreground" />
@@ -95,6 +118,8 @@ function ErrorState({ error }: { error: Error }) {
 }
 
 export default function TourList({
+  tours: providedTours,
+  isLoading: providedIsLoading,
   keyword,
   areaCode,
   contentTypeId,
@@ -105,6 +130,7 @@ export default function TourList({
   hoveredTourId,
   onTourHover,
   className,
+  isBookmarkFilterActive = false,
 }: TourListProps) {
   // 검색 모드: keyword가 있으면 useTourSearch 사용
   const searchQuery = useTourSearch({
@@ -113,7 +139,7 @@ export default function TourList({
     contentTypeId,
     numOfRows,
     pageNo,
-    enabled: Boolean(keyword && keyword.trim() !== ""),
+    enabled: Boolean(keyword && keyword.trim() !== "" && !providedTours),
   });
 
   // 일반 모드: keyword가 없으면 useTourList 사용
@@ -122,13 +148,28 @@ export default function TourList({
     contentTypeId,
     numOfRows,
     pageNo,
+    enabled: !providedTours,
   });
 
   // 검색 모드인지 일반 모드인지 확인
   const isSearchMode = Boolean(keyword && keyword.trim() !== "");
-  const { data, isLoading, isError, error } = isSearchMode
+  const {
+    data: queryData,
+    isLoading: queryIsLoading,
+    isError,
+    error,
+  } = providedTours
+    ? { data: undefined, isLoading: false, isError: false, error: undefined }
+    : isSearchMode
     ? searchQuery
     : listQuery;
+
+  // 제공된 tours가 있으면 그것을 사용, 없으면 쿼리 결과 사용
+  const data = providedTours ?? queryData;
+
+  // 로딩 상태: providedTours가 있으면 providedIsLoading 사용, 없으면 쿼리 로딩 상태 사용
+  const isLoading =
+    providedTours !== undefined ? providedIsLoading ?? false : queryIsLoading;
 
   // 정렬된 데이터 계산 (메모이제이션)
   const sortedData = useMemo(() => {
@@ -167,7 +208,10 @@ export default function TourList({
   if (!sortedData || sortedData.length === 0) {
     return (
       <div className={cn(className)}>
-        <EmptyState isSearchMode={isSearchMode} />
+        <EmptyState
+          isSearchMode={isSearchMode}
+          isBookmarkFilterActive={isBookmarkFilterActive}
+        />
       </div>
     );
   }

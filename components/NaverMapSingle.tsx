@@ -159,7 +159,7 @@ function NaverMapSingleComponent({
       <div className={cn("flex w-full flex-col gap-4", className)}>
         <div
           className={cn(
-            "flex flex-col items-center justify-center gap-4 rounded-lg border border-muted bg-muted/50 p-8",
+            "flex flex-col items-center justify-center gap-4 rounded-lg border border-muted bg-muted/50 p-8 overflow-hidden",
             height,
           )}
         >
@@ -189,7 +189,7 @@ function NaverMapSingleComponent({
         ref={containerRef}
         id={mapId}
         className={cn(
-          "w-full rounded-lg border border-border bg-card",
+          "w-full rounded-lg border border-border bg-card overflow-hidden",
           height,
           (isLoading || error) && "hidden", // 로딩/에러 시 숨김
         )}
