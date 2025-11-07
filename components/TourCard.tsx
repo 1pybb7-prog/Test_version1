@@ -27,6 +27,11 @@ interface TourCardProps {
   isSelected?: boolean; // 선택된 상태
   isHovered?: boolean; // 호버된 상태
   onHover?: (tourId: string | undefined) => void; // 호버 핸들러
+  petInfo?: {
+    chkpetleash?: string;
+    chkpetsize?: string;
+    chkpetplace?: string;
+  } | null; // 반려동물 정보
   className?: string;
 }
 
@@ -35,6 +40,7 @@ export default function TourCard({
   isSelected = false,
   isHovered = false,
   onHover,
+  petInfo,
   className,
 }: TourCardProps) {
   const imageUrl = tour.firstimage || tour.firstimage2;
@@ -94,11 +100,31 @@ export default function TourCard({
             <span className="text-sm">이미지 없음</span>
           </div>
         )}
-        {/* 타입 뱃지 */}
-        <div className="absolute right-2 top-2">
+        {/* 타입 뱃지 및 반려동물 아이콘 */}
+        <div className="absolute right-2 top-2 flex flex-col gap-2 items-end">
           <span className="inline-flex items-center gap-1 rounded-full bg-primary/90 px-3 py-1 text-xs font-medium text-primary-foreground backdrop-blur-sm">
             {tourTypeName}
           </span>
+          {/* 반려동물 동반 가능 아이콘 */}
+          {petInfo?.chkpetleash && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+              <span className="text-sm">🐾</span>
+              {petInfo.chkpetsize && (
+                <span className="text-[10px]">
+                  {petInfo.chkpetsize.includes("소형") ||
+                  petInfo.chkpetsize.includes("소")
+                    ? "소형"
+                    : petInfo.chkpetsize.includes("중형") ||
+                      petInfo.chkpetsize.includes("중")
+                    ? "중형"
+                    : petInfo.chkpetsize.includes("대형") ||
+                      petInfo.chkpetsize.includes("대")
+                    ? "대형"
+                    : ""}
+                </span>
+              )}
+            </span>
+          )}
         </div>
       </div>
 

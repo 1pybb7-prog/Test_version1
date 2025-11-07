@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Tag } from "lucide-react";
+import { MapPin, Tag, Heart } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -32,8 +32,16 @@ import { cn } from "@/lib/utils";
 interface TourFilterProps {
   areaCode?: string;
   contentTypeId?: string;
+  petFriendly?: boolean;
+  petSize?: "small" | "medium" | "large" | undefined;
+  petType?: "dog" | "cat" | undefined;
+  petPlace?: "indoor" | "outdoor" | undefined;
   onAreaCodeChange?: (areaCode: string | undefined) => void;
   onContentTypeIdChange?: (contentTypeId: string | undefined) => void;
+  onPetFriendlyChange?: (petFriendly: boolean | undefined) => void;
+  onPetSizeChange?: (petSize: "small" | "medium" | "large" | undefined) => void;
+  onPetTypeChange?: (petType: "dog" | "cat" | undefined) => void;
+  onPetPlaceChange?: (petPlace: "indoor" | "outdoor" | undefined) => void;
   onReset?: () => void;
   className?: string;
 }
@@ -41,12 +49,22 @@ interface TourFilterProps {
 export default function TourFilter({
   areaCode,
   contentTypeId,
+  petFriendly,
+  petSize,
+  petType,
+  petPlace,
   onAreaCodeChange,
   onContentTypeIdChange,
+  onPetFriendlyChange,
+  onPetSizeChange,
+  onPetTypeChange,
+  onPetPlaceChange,
   onReset,
   className,
 }: TourFilterProps) {
-  const hasActiveFilters = Boolean(areaCode || contentTypeId);
+  const hasActiveFilters = Boolean(
+    areaCode || contentTypeId || petFriendly || petSize || petType || petPlace,
+  );
 
   return (
     <div
@@ -100,6 +118,48 @@ export default function TourFilter({
           </SelectContent>
         </Select>
       </div>
+
+      {/* 반려동물 동반 가능 필터 */}
+      <div className="flex items-center gap-2">
+        <Heart className="size-4 text-muted-foreground" />
+        <Button
+          variant={petFriendly ? "default" : "outline"}
+          size="sm"
+          onClick={() => {
+            onPetFriendlyChange?.(!petFriendly);
+          }}
+          className="gap-2"
+        >
+          <span className="text-base">🐾</span>
+          반려동물 동반 가능
+        </Button>
+      </div>
+
+      {/* 반려동물 크기 필터 (반려동물 동반 가능이 활성화된 경우에만 표시) */}
+      {petFriendly && (
+        <div className="flex items-center gap-2">
+          <Select
+            value={petSize || "all"}
+            onValueChange={(value) => {
+              onPetSizeChange?.(
+                value === "all"
+                  ? undefined
+                  : (value as "small" | "medium" | "large"),
+              );
+            }}
+          >
+            <SelectTrigger className="w-[120px] sm:w-[140px]">
+              <SelectValue placeholder="크기 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">전체 크기</SelectItem>
+              <SelectItem value="small">소형</SelectItem>
+              <SelectItem value="medium">중형</SelectItem>
+              <SelectItem value="large">대형</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* 필터 초기화 버튼 */}
       {hasActiveFilters && (

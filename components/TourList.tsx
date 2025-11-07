@@ -41,6 +41,8 @@ interface TourListProps {
   onTourHover?: (tourId: string | undefined) => void; // 관광지 호버 핸들러
   className?: string;
   isBookmarkFilterActive?: boolean; // 북마크 필터 활성화 여부
+  petInfoMap?: Map<string, any>; // 반려동물 정보 맵
+  isPetFilterActive?: boolean; // 반려동물 필터 활성화 여부
 }
 
 /**
@@ -65,9 +67,11 @@ function TourCardSkeleton() {
 function EmptyState({
   isSearchMode,
   isBookmarkFilterActive,
+  isPetFilterActive,
 }: {
   isSearchMode?: boolean;
   isBookmarkFilterActive?: boolean;
+  isPetFilterActive?: boolean;
 }) {
   if (isBookmarkFilterActive) {
     return (
@@ -77,6 +81,24 @@ function EmptyState({
           <h3 className="text-lg font-semibold">북마크한 관광지가 없습니다</h3>
           <p className="text-sm text-muted-foreground">
             관광지를 북마크하면 여기에 표시됩니다.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isPetFilterActive) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+        <span className="text-4xl">🐾</span>
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-semibold">
+            반려동물 동반 가능한 관광지가 없습니다
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            현재 목록에 반려동물 동반 정보가 있는 관광지가 없습니다.
+            <br />
+            다른 지역이나 관광 타입으로 검색해보세요.
           </p>
         </div>
       </div>
@@ -131,6 +153,8 @@ export default function TourList({
   onTourHover,
   className,
   isBookmarkFilterActive = false,
+  petInfoMap,
+  isPetFilterActive = false,
 }: TourListProps) {
   // 검색 모드: keyword가 있으면 useTourSearch 사용
   const searchQuery = useTourSearch({
@@ -211,6 +235,7 @@ export default function TourList({
         <EmptyState
           isSearchMode={isSearchMode}
           isBookmarkFilterActive={isBookmarkFilterActive}
+          isPetFilterActive={isPetFilterActive}
         />
       </div>
     );
@@ -224,16 +249,20 @@ export default function TourList({
         className,
       )}
     >
-      {sortedData.map((tour) => (
-        <div key={tour.contentid} id={`tour-${tour.contentid}`}>
-          <TourCard
-            tour={tour}
-            isSelected={selectedTourId === tour.contentid}
-            isHovered={hoveredTourId === tour.contentid}
-            onHover={onTourHover}
-          />
-        </div>
-      ))}
+      {sortedData.map((tour) => {
+        const petInfo = petInfoMap?.get(tour.contentid);
+        return (
+          <div key={tour.contentid} id={`tour-${tour.contentid}`}>
+            <TourCard
+              tour={tour}
+              isSelected={selectedTourId === tour.contentid}
+              isHovered={hoveredTourId === tour.contentid}
+              onHover={onTourHover}
+              petInfo={petInfo}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

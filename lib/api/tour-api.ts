@@ -312,20 +312,42 @@ export async function getDetailPetTour(
 
     // API 에러 체크
     if (data.response.header.resultCode !== "0000") {
-      throw new Error(
-        `API 에러: ${data.response.header.resultCode} - ${data.response.header.resultMsg}`,
+      console.warn(
+        `[Tour API] detailPetTour2 API 에러: ${data.response.header.resultCode} - ${data.response.header.resultMsg}`,
+        { contentId },
       );
+      // API 에러가 발생해도 null을 반환 (에러를 throw하지 않음)
+      return null;
     }
 
     // 데이터 추출
     const items = data.response.body.items?.item;
     if (!items) {
+      console.log(`[Tour API] detailPetTour2 데이터 없음: ${contentId}`, {
+        body: data.response.body,
+        items: data.response.body.items,
+      });
       return null;
     }
 
     // 배열이 아닌 경우 배열로 변환 후 첫 번째 항목 반환
     const results = Array.isArray(items) ? items : [items];
-    return results[0] ?? null;
+    const petInfo = results[0] ?? null;
+
+    if (petInfo) {
+      console.log(`[Tour API] detailPetTour2 성공: ${contentId}`, {
+        chkpetleash: petInfo.chkpetleash,
+        chkpetsize: petInfo.chkpetsize,
+        hasPetInfo: Boolean(
+          petInfo.chkpetleash ||
+            petInfo.petinfo ||
+            petInfo.chkpetsize ||
+            petInfo.chkpetplace,
+        ),
+      });
+    }
+
+    return petInfo;
   } catch (error) {
     console.error(`[Tour API] 에러: detailPetTour2`, error);
     throw error;

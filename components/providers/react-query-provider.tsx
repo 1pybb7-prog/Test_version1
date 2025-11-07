@@ -29,6 +29,20 @@ export function ReactQueryProvider({
             retry: 1,
             // refetchOnWindowFocus 비활성화 (선택 사항)
             refetchOnWindowFocus: false,
+            // 에러가 발생해도 쿼리가 실패 상태로 남지 않도록 처리
+            throwOnError: false,
+            // 전역 에러 핸들러 (선택 사항)
+            onError: (error) => {
+              // Chrome 확장 프로그램 에러는 무시
+              if (
+                error instanceof Error &&
+                error.message.includes("message channel closed")
+              ) {
+                return;
+              }
+              // 다른 에러는 콘솔에만 출력
+              console.warn("[React Query] 쿼리 에러:", error);
+            },
           },
         },
       }),

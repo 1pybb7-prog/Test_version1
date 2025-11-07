@@ -13,6 +13,7 @@ import { useTourSort } from "@/hooks/useTourSort";
 import { useTourList } from "@/hooks/useTourList";
 import { useTourSearch } from "@/hooks/useTourSearch";
 import { useBookmarkList } from "@/hooks/useBookmarkList";
+import { usePetTourFilter } from "@/hooks/usePetTourFilter";
 import { List, Map } from "lucide-react";
 import type { TourItem } from "@/lib/types/tour";
 
@@ -38,8 +39,16 @@ import type { TourItem } from "@/lib/types/tour";
  */
 
 export default function Home() {
-  const { filters, setAreaCode, setContentTypeId, resetFilters } =
-    useTourFilter();
+  const {
+    filters,
+    setAreaCode,
+    setContentTypeId,
+    setPetFriendly,
+    setPetSize,
+    setPetType,
+    setPetPlace,
+    resetFilters,
+  } = useTourFilter();
   const { sortOption, setSortOption } = useTourSort();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [pageNo, setPageNo] = useState(1);
@@ -63,6 +72,10 @@ export default function Home() {
   }, [
     filters.areaCode,
     filters.contentTypeId,
+    filters.petFriendly,
+    filters.petSize,
+    filters.petType,
+    filters.petPlace,
     searchKeyword,
     isBookmarkFilterActive,
   ]);
@@ -91,7 +104,7 @@ export default function Home() {
     : listQuery;
 
   // 북마크 필터 적용
-  const tours = useMemo(() => {
+  const toursAfterBookmark = useMemo(() => {
     if (!isBookmarkFilterActive) {
       return rawTours;
     }
@@ -108,6 +121,20 @@ export default function Home() {
     );
     return filtered;
   }, [rawTours, isBookmarkFilterActive, bookmarkedContentIds]);
+
+  // 반려동물 필터 적용
+  const {
+    filteredTours: tours,
+    petInfoMap,
+    isLoading: isPetFilterLoading,
+  } = usePetTourFilter({
+    tours: toursAfterBookmark,
+    petFriendly: filters.petFriendly,
+    petSize: filters.petSize,
+    petType: filters.petType,
+    petPlace: filters.petPlace,
+    enabled: Boolean(filters.petFriendly),
+  });
 
   /**
    * 검색 실행 핸들러
@@ -207,8 +234,32 @@ export default function Home() {
         <TourFilter
           areaCode={filters.areaCode}
           contentTypeId={filters.contentTypeId}
+          petFriendly={filters.petFriendly}
+          petSize={filters.petSize}
+          petType={filters.petType}
+          petPlace={filters.petPlace}
           onAreaCodeChange={handleAreaCodeChange}
           onContentTypeIdChange={handleContentTypeIdChange}
+          onPetFriendlyChange={(petFriendly) => {
+            setPetFriendly(petFriendly);
+            setPageNo(1);
+            console.log("[Home] 반려동물 필터 변경:", petFriendly);
+          }}
+          onPetSizeChange={(petSize) => {
+            setPetSize(petSize);
+            setPageNo(1);
+            console.log("[Home] 반려동물 크기 필터 변경:", petSize);
+          }}
+          onPetTypeChange={(petType) => {
+            setPetType(petType);
+            setPageNo(1);
+            console.log("[Home] 반려동물 종류 필터 변경:", petType);
+          }}
+          onPetPlaceChange={(petPlace) => {
+            setPetPlace(petPlace);
+            setPageNo(1);
+            console.log("[Home] 반려동물 장소 필터 변경:", petPlace);
+          }}
           onReset={resetFilters}
         />
       </section>
@@ -242,7 +293,7 @@ export default function Home() {
             <TabsContent value="list" className="flex flex-col gap-6">
               <TourList
                 tours={tours}
-                isLoading={isLoading}
+                isLoading={isLoading || isPetFilterLoading}
                 keyword={searchKeyword}
                 areaCode={filters.areaCode}
                 contentTypeId={filters.contentTypeId}
@@ -253,9 +304,11 @@ export default function Home() {
                 hoveredTourId={hoveredTourId}
                 onTourHover={handleTourHover}
                 isBookmarkFilterActive={isBookmarkFilterActive}
+                petInfoMap={petInfoMap}
+                isPetFilterActive={Boolean(filters.petFriendly)}
               />
               {/* 페이지네이션 */}
-              {!isLoading && tours.length > 0 && (
+              {!isLoading && !isPetFilterLoading && tours.length > 0 && (
                 <TourPagination
                   currentPage={pageNo}
                   itemsPerPage={numOfRows}
@@ -282,7 +335,7 @@ export default function Home() {
           <div className="flex flex-col gap-6 overflow-y-auto lg:max-h-[calc(100vh-8rem)]">
             <TourList
               tours={tours}
-              isLoading={isLoading}
+              isLoading={isLoading || isPetFilterLoading}
               keyword={searchKeyword}
               areaCode={filters.areaCode}
               contentTypeId={filters.contentTypeId}
@@ -293,9 +346,11 @@ export default function Home() {
               hoveredTourId={hoveredTourId}
               onTourHover={handleTourHover}
               isBookmarkFilterActive={isBookmarkFilterActive}
+              petInfoMap={petInfoMap}
+              isPetFilterActive={Boolean(filters.petFriendly)}
             />
             {/* 페이지네이션 */}
-            {!isLoading && tours.length > 0 && (
+            {!isLoading && !isPetFilterLoading && tours.length > 0 && (
               <TourPagination
                 currentPage={pageNo}
                 itemsPerPage={numOfRows}
