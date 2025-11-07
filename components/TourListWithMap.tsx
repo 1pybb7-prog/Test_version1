@@ -243,7 +243,6 @@ export default function TourListWithMap({
                 tour={tour}
                 isSelected={selectedTourId === tour.contentid}
                 isHovered={hoveredTourId === tour.contentid}
-                onSelect={onTourSelect}
                 onHover={onTourHover}
               />
             </div>
