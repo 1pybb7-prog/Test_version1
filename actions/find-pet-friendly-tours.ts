@@ -38,7 +38,19 @@ export async function findPetFriendlyToursAction(
   try {
     console.log(
       "[findPetFriendlyToursAction] 반려동물 동반 가능한 관광지 찾기 시작",
-      options,
+      {
+        ...options,
+        NODE_ENV: process.env.NODE_ENV,
+        // 환경 변수 상태 확인 (디버깅용)
+        TOUR_API_KEY: process.env.TOUR_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_API_KEY: process.env.NEXT_PUBLIC_TOUR_API_KEY
+          ? "설정됨"
+          : "미설정",
+        TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+          ? "설정됨"
+          : "미설정",
+      },
     );
 
     const results = await findPetFriendlyTours({
@@ -52,23 +64,43 @@ export async function findPetFriendlyToursAction(
 
     console.log(
       `[findPetFriendlyToursAction] 반려동물 동반 가능한 관광지 찾기 완료: ${results.length}개 발견`,
+      {
+        NODE_ENV: process.env.NODE_ENV,
+      },
     );
 
     return results;
   } catch (error) {
     // API 키 미설정 또는 네트워크 에러 시 명확한 에러 메시지
     if (error instanceof Error) {
-      console.error(
-        "[findPetFriendlyToursAction] 에러 발생:",
-        error.message,
-        error,
-      );
+      // 배포 환경에서 문제 파악을 위한 상세 로그
+      console.error("[findPetFriendlyToursAction] 에러 발생:", {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        NODE_ENV: process.env.NODE_ENV,
+        errorType: error.constructor.name,
+        options,
+        // 환경 변수 상태 확인 (디버깅용)
+        TOUR_API_KEY: process.env.TOUR_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_API_KEY: process.env.NEXT_PUBLIC_TOUR_API_KEY
+          ? "설정됨"
+          : "미설정",
+        TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+          ? "설정됨"
+          : "미설정",
+      });
 
-      if (error.message.includes("TOUR_API_KEY")) {
-        console.error(
-          "[findPetFriendlyToursAction] API 키 미설정:",
-          "NEXT_PUBLIC_TOUR_API_KEY 또는 TOUR_API_KEY를 .env.local에 설정해주세요.",
-        );
+      if (
+        error.message.includes("TOUR_API_KEY") ||
+        error.message.includes("TOUR_PET_API_KEY")
+      ) {
+        console.error("[findPetFriendlyToursAction] API 키 미설정:", {
+          message:
+            "NEXT_PUBLIC_TOUR_API_KEY 또는 TOUR_PET_API_KEY를 환경 변수에 설정해주세요.",
+          NODE_ENV: process.env.NODE_ENV,
+          options,
+        });
         // API 키가 없어도 빈 배열을 반환하여 앱이 크래시되지 않도록 처리
         return [];
       }
@@ -76,22 +108,31 @@ export async function findPetFriendlyToursAction(
         error.message.includes("API 호출 실패") ||
         error.message.includes("네트워크")
       ) {
-        console.warn(
-          "[findPetFriendlyToursAction] 네트워크 에러:",
-          error.message,
-        );
+        console.warn("[findPetFriendlyToursAction] 네트워크 에러:", {
+          error: error.message,
+          NODE_ENV: process.env.NODE_ENV,
+          options,
+        });
         // 네트워크 에러도 빈 배열을 반환하여 앱이 크래시되지 않도록 처리
         return [];
       }
       if (error.message.includes("API 에러")) {
-        console.warn("[findPetFriendlyToursAction] API 에러:", error.message);
+        console.warn("[findPetFriendlyToursAction] API 에러:", {
+          error: error.message,
+          NODE_ENV: process.env.NODE_ENV,
+          options,
+        });
         // API 에러도 빈 배열을 반환하여 앱이 크래시되지 않도록 처리
         return [];
       }
     }
 
     // 기타 에러도 빈 배열을 반환하여 앱이 크래시되지 않도록 처리
-    console.warn("[findPetFriendlyToursAction] 예상치 못한 에러:", error);
+    console.warn("[findPetFriendlyToursAction] 예상치 못한 에러:", {
+      error: error instanceof Error ? error.message : String(error),
+      NODE_ENV: process.env.NODE_ENV,
+      options,
+    });
     return [];
   }
 }

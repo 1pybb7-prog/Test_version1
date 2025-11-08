@@ -42,20 +42,28 @@ const COMMON_PARAMS = TOUR_API_COMMON_PARAMS;
  * API 서비스 키 가져오기
  *
  * NEXT_PUBLIC_TOUR_API_KEY 또는 TOUR_API_KEY 환경변수에서 가져옵니다.
+ * 서버 사이드에서는 TOUR_API_KEY를 우선적으로 사용합니다.
  */
 function getServiceKey(): string {
-  const key =
-    process.env.NEXT_PUBLIC_TOUR_API_KEY ||
-    process.env.TOUR_API_KEY ||
-    process.env.NEXT_PUBLIC_TOUR_API_KEY?.trim() ||
-    process.env.TOUR_API_KEY?.trim();
+  // 서버 사이드에서는 TOUR_API_KEY를 우선 사용
+  // 클라이언트 사이드에서는 NEXT_PUBLIC_TOUR_API_KEY만 사용 가능
+  const tourKey = process.env.TOUR_API_KEY;
+  const nextPublicKey = process.env.NEXT_PUBLIC_TOUR_API_KEY;
 
-  if (!key || key.trim() === "") {
+  const key = tourKey?.trim() || nextPublicKey?.trim() || null;
+
+  if (!key || key.length === 0) {
     console.error("[Tour API] 환경 변수 확인:", {
-      NEXT_PUBLIC_TOUR_API_KEY: process.env.NEXT_PUBLIC_TOUR_API_KEY
-        ? "설정됨"
+      TOUR_API_KEY: tourKey ? `설정됨 (길이: ${tourKey.length})` : "미설정",
+      NEXT_PUBLIC_TOUR_API_KEY: nextPublicKey
+        ? `설정됨 (길이: ${nextPublicKey.length})`
         : "미설정",
-      TOUR_API_KEY: process.env.TOUR_API_KEY ? "설정됨" : "미설정",
+      NODE_ENV: process.env.NODE_ENV,
+      환경변수_접근_가능: typeof process.env !== "undefined",
+      // 모든 환경 변수 키 목록 확인 (디버깅용)
+      사용가능한_환경변수_키: Object.keys(process.env)
+        .filter((k) => k.includes("TOUR"))
+        .slice(0, 10),
     });
     throw new Error(
       "TOUR_API_KEY 환경변수가 설정되지 않았습니다. NEXT_PUBLIC_TOUR_API_KEY 또는 TOUR_API_KEY를 설정해주세요.",
@@ -66,6 +74,10 @@ function getServiceKey(): string {
   console.log(
     "[Tour API] API 키 로드 성공:",
     key.length > 0 ? `${key.substring(0, 8)}...` : "빈 값",
+    {
+      사용된_키_타입: tourKey ? "TOUR_API_KEY" : "NEXT_PUBLIC_TOUR_API_KEY",
+      NODE_ENV: process.env.NODE_ENV,
+    },
   );
 
   return key.trim();
@@ -74,18 +86,36 @@ function getServiceKey(): string {
 /**
  * 반려동물 동반여행 API 서비스 키 가져오기
  *
- * NEXT_PUBLIC_TOUR_PET_API_KEY 환경변수에서 가져옵니다.
+ * NEXT_PUBLIC_TOUR_PET_API_KEY 또는 TOUR_PET_API_KEY 환경변수에서 가져옵니다.
+ * 배포 환경에서도 안전하게 동작하도록 개선되었습니다.
  */
 function getPetTourServiceKey(): string {
-  const key =
-    process.env.NEXT_PUBLIC_TOUR_PET_API_KEY || process.env.TOUR_PET_API_KEY;
+  // 환경 변수 확인 (빈 문자열도 체크)
+  // 서버 사이드에서는 NEXT_PUBLIC_ 접두사가 없어도 접근 가능하지만,
+  // 클라이언트 사이드에서는 NEXT_PUBLIC_ 접두사가 필요합니다.
+  // 서버 사이드에서는 TOUR_PET_API_KEY를 우선적으로 사용
+  const tourPetKey = process.env.TOUR_PET_API_KEY;
+  const nextPublicKey = process.env.NEXT_PUBLIC_TOUR_PET_API_KEY;
 
-  if (!key) {
-    console.error("[Tour API] 환경 변수 확인:", {
-      NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
-        ? "설정됨"
+  // 서버 사이드에서는 TOUR_PET_API_KEY를 우선 사용
+  // 클라이언트 사이드에서는 NEXT_PUBLIC_TOUR_PET_API_KEY만 사용 가능
+  const key = tourPetKey?.trim() || nextPublicKey?.trim() || null;
+
+  if (!key || key.length === 0) {
+    // 배포 환경에서 문제 파악을 위한 상세 로그
+    console.error("[Tour API] 반려동물 API 키 미설정:", {
+      TOUR_PET_API_KEY: tourPetKey
+        ? `설정됨 (길이: ${tourPetKey.length})`
         : "미설정",
-      TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+      NEXT_PUBLIC_TOUR_PET_API_KEY: nextPublicKey
+        ? `설정됨 (길이: ${nextPublicKey.length})`
+        : "미설정",
+      NODE_ENV: process.env.NODE_ENV,
+      환경변수_접근_가능: typeof process.env !== "undefined",
+      // 모든 환경 변수 키 목록 확인 (디버깅용)
+      사용가능한_환경변수_키: Object.keys(process.env)
+        .filter((k) => k.includes("TOUR"))
+        .slice(0, 10),
     });
     throw new Error(
       "TOUR_PET_API_KEY 환경변수가 설정되지 않았습니다. NEXT_PUBLIC_TOUR_PET_API_KEY 또는 TOUR_PET_API_KEY를 설정해주세요.",
@@ -95,7 +125,15 @@ function getPetTourServiceKey(): string {
   // 환경 변수가 제대로 읽혔는지 확인 (키 값은 로그에 출력하지 않음)
   console.log(
     "[Tour API] 반려동물 API 키 로드 성공:",
-    key.length > 0 ? `${key.substring(0, 8)}...` : "빈 값",
+    key.length > 0
+      ? `${key.substring(0, 8)}... (길이: ${key.length})`
+      : "빈 값",
+    {
+      NODE_ENV: process.env.NODE_ENV,
+      사용된_키_타입: tourPetKey
+        ? "TOUR_PET_API_KEY"
+        : "NEXT_PUBLIC_TOUR_PET_API_KEY",
+    },
   );
 
   return key.trim();
@@ -318,13 +356,53 @@ export async function getDetailPetTour(
   let serviceKey: string;
   try {
     serviceKey = getPetTourServiceKey();
+    console.log(`[Tour API] 반려동물 API 키 사용: ${contentId}`, {
+      serviceKeyLength: serviceKey.length,
+      NODE_ENV: process.env.NODE_ENV,
+    });
   } catch (error) {
     // 반려동물 API 키가 없으면 일반 API 키 사용
     console.log(
-      "[Tour API] 반려동물 API 키가 없어 일반 API 키 사용",
-      error instanceof Error ? error.message : error,
+      `[Tour API] 반려동물 API 키가 없어 일반 API 키 사용 시도: ${contentId}`,
+      {
+        error: error instanceof Error ? error.message : String(error),
+        NODE_ENV: process.env.NODE_ENV,
+        // 환경 변수 상태 확인
+        TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+          ? "설정됨"
+          : "미설정",
+      },
     );
-    serviceKey = getServiceKey();
+    try {
+      serviceKey = getServiceKey();
+      console.log(`[Tour API] 일반 API 키 사용 성공: ${contentId}`, {
+        serviceKeyLength: serviceKey.length,
+        NODE_ENV: process.env.NODE_ENV,
+      });
+    } catch (generalKeyError) {
+      // 일반 API 키도 없으면 에러 throw
+      console.error(`[Tour API] API 키를 찾을 수 없음: ${contentId}`, {
+        petKeyError: error instanceof Error ? error.message : String(error),
+        generalKeyError:
+          generalKeyError instanceof Error
+            ? generalKeyError.message
+            : String(generalKeyError),
+        NODE_ENV: process.env.NODE_ENV,
+        // 모든 환경 변수 상태 확인
+        TOUR_API_KEY: process.env.TOUR_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_API_KEY: process.env.NEXT_PUBLIC_TOUR_API_KEY
+          ? "설정됨"
+          : "미설정",
+        TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+        NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+          ? "설정됨"
+          : "미설정",
+      });
+      throw new Error(
+        "TOUR_API_KEY 또는 TOUR_PET_API_KEY 환경변수가 설정되지 않았습니다.",
+      );
+    }
   }
 
   const searchParams = new URLSearchParams({
@@ -335,10 +413,11 @@ export async function getDetailPetTour(
 
   const url = `${BASE_URL}/detailPetTour2?${searchParams.toString()}`;
 
-  console.log(`[Tour API] 호출: detailPetTour2`, {
-    contentId,
+  console.log(`[Tour API] detailPetTour2 API 호출 시작: ${contentId}`, {
+    url: url.substring(0, 100) + "...", // URL 일부만 로그에 출력
     serviceKeyLength: serviceKey.length,
     serviceKeyPrefix: serviceKey.substring(0, 8),
+    NODE_ENV: process.env.NODE_ENV,
   });
 
   try {
@@ -346,7 +425,21 @@ export async function getDetailPetTour(
       next: { revalidate: 3600 }, // 1시간 캐시
     });
 
+    console.log(`[Tour API] detailPetTour2 API 응답 받음: ${contentId}`, {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+    });
+
     if (!response.ok) {
+      const errorText = await response
+        .text()
+        .catch(() => "응답 본문 읽기 실패");
+      console.error(`[Tour API] detailPetTour2 API 호출 실패: ${contentId}`, {
+        status: response.status,
+        statusText: response.statusText,
+        errorText: errorText.substring(0, 200), // 에러 텍스트 일부만 로그에 출력
+      });
       throw new Error(
         `API 호출 실패: ${response.status} ${response.statusText}`,
       );
@@ -441,7 +534,24 @@ export async function getDetailPetTour(
 
     return petInfo;
   } catch (error) {
-    console.error(`[Tour API] 에러: detailPetTour2`, error);
+    // 배포 환경에서 문제 파악을 위한 상세 로그
+    console.error(`[Tour API] detailPetTour2 에러: ${contentId}`, {
+      error: error instanceof Error ? error.message : String(error),
+      errorStack: error instanceof Error ? error.stack : undefined,
+      NODE_ENV: process.env.NODE_ENV,
+      serviceKeyLength: serviceKey?.length,
+      serviceKeyPrefix: serviceKey?.substring(0, 8),
+      url: url.substring(0, 100) + "...",
+      // 환경 변수 상태 확인
+      TOUR_PET_API_KEY: process.env.TOUR_PET_API_KEY ? "설정됨" : "미설정",
+      NEXT_PUBLIC_TOUR_PET_API_KEY: process.env.NEXT_PUBLIC_TOUR_PET_API_KEY
+        ? "설정됨"
+        : "미설정",
+      TOUR_API_KEY: process.env.TOUR_API_KEY ? "설정됨" : "미설정",
+      NEXT_PUBLIC_TOUR_API_KEY: process.env.NEXT_PUBLIC_TOUR_API_KEY
+        ? "설정됨"
+        : "미설정",
+    });
     throw error;
   }
 }
